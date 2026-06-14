@@ -23,7 +23,9 @@
           :key="item.path"
           @click="router.push(item.path)"
           class="group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300"
-          :class="isActive(item.path) ? 'text-white' : 'text-gray-400 hover:text-gray-200'"
+          :style="{color: isActive(item.path) ? 'var(--text-primary)' : 'var(--text-muted)'}"
+          @mouseenter="(e) => { if (!isActive(item.path)) e.target.style.color = 'var(--text-primary)' }"
+          @mouseleave="(e) => { if (!isActive(item.path)) e.target.style.color = 'var(--text-muted)' }"
         >
           <!-- Active glow background -->
           <div
