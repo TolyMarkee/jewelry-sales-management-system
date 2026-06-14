@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#f5f0eb"/>
+  <circle cx="200" cy="200" r="80" fill="none" stroke="#d4af37" stroke-width="8"/>
+  <circle cx="200" cy="120" r="12" fill="#ff6b6b"/>
+  <text x="200" y="330" text-anchor="middle" fill="#999" font-size="18" font-family="Arial">18K金钻石戒指</text>
+</svg>
