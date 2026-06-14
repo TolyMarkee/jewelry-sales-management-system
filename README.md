@@ -1,6 +1,8 @@
-# 珠宝首饰销售管理系统
+# 基于Spring Boot + Vue的珠宝首饰销售管理系统的设计与实现
 
-基于 **Spring Boot 2.7 + Vue 2 + Element UI + MyBatis-Plus + MySQL** 的全栈珠宝首饰销售管理系统。
+> Design and Implementation of Jewelry Sales Management System Based on Spring Boot + Vue
+
+基于 **Spring Boot 2.7 + Vue 3 + Element Plus + MyBatis-Plus + MySQL** 的全栈珠宝首饰销售管理系统。
 
 ## 项目结构
 
