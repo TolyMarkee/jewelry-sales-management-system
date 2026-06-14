@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen w-full overflow-hidden" style="background:var(--bg)">
+  <div class="flex h-screen w-full overflow-hidden" :style="{background: isLight ? 'linear-gradient(135deg, #dde1e7 0%, #c8cdd5 50%, #bcc2cc 100%)' : 'var(--bg)'}">
     <!-- Left: Form area -->
     <div
       class="relative w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-12"
@@ -56,7 +56,7 @@
         </div>
         <a href="#" class="text-right text-xs mt-2 block hover:underline" style="color:var(--text-muted)">忘记密码？</a>
         <div class="flex justify-center mt-5">
-          <button :disabled="loading" class="group/button relative inline-flex justify-center items-center overflow-hidden rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer disabled:opacity-60" style="background:var(--accent); box-shadow:0 4px 20px rgba(99,102,241,0.3)" @click="handleLogin">
+          <button :disabled="loading" class="group/button relative inline-flex justify-center items-center overflow-hidden rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer disabled:opacity-60" class="!bg-[#0f172a] hover:!bg-[#020617] shadow-[0_4px_24px_rgba(15,23,42,0.4)]" @click="handleLogin">
             <span class="text-sm px-3 py-1">{{ loading ? '验证中...' : '登 录' }}</span>
             <div class="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
               <div class="relative h-full w-8 bg-white/20" />
@@ -82,6 +82,7 @@ import AppInput from '@/components/AppInput.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
+const isLight = computed(() => document.documentElement.classList.contains('light'))
 const form = reactive({ username: '', password: '' })
 const loading = ref(false)
 const mouse = ref({ x: 0, y: 0 })
