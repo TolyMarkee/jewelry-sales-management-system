@@ -2,8 +2,8 @@
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-lg font-bold" style="color:#DEE4EA">商品管理</h2>
-        <p class="text-xs mt-0.5" style="color:#596773">共 {{ total }} 件商品</p>
+        <h2 class="text-lg font-bold" style="color:var(--text-primary)">商品管理</h2>
+        <p class="text-xs mt-0.5" style="color:var(--text-muted)">共 {{ total }} 件商品</p>
       </div>
       <button @click="handleAdd" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-105 active:scale-95 shadow-lg" style="background:linear-gradient(135deg,#a855f7,#6366f1); color:#fff; box-shadow:0 4px 24px rgba(168,85,247,0.3)">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
@@ -22,16 +22,16 @@
           v-model="search.categoryId"
           @change="loadData"
           class="h-9 pl-3 pr-8 rounded-xl text-sm outline-none cursor-pointer appearance-none transition-all"
-          style="background:#101214; border:1px solid #2C333A; color:#94a3b8"
+          style="background:var(--bg); border:1px solid #2C333A; color:#94a3b8"
         >
           <option :value="null">📂 全部分类</option>
           <option v-for="c in cats" :key="c.id" :value="c.id">{{ c.name }}</option>
         </select>
-        <svg class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" style="color:#596773" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        <svg class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" style="color:var(--text-muted)" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
 
       <!-- Results count -->
-      <span class="text-xs ml-auto" style="color:#596773" v-if="search.keyword || search.categoryId">
+      <span class="text-xs ml-auto" style="color:var(--text-muted)" v-if="search.keyword || search.categoryId">
         找到 {{ total }} 条结果
       </span>
     </div>
@@ -41,10 +41,10 @@
       <div
         v-for="p in tableData" :key="p.id"
         class="group flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 hover:-translate-y-0.5"
-        style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.04); box-shadow:0 1px 3px rgba(0,0,0,0.2)"
+        style="background:var(--surface); border:1px solid var(--border); box-shadow:0 1px 3px rgba(0,0,0,0.2)"
       >
         <!-- Image -->
-        <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border" style="background:#101214; border-color:rgba(255,255,255,0.06)">
+        <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border" style="background:var(--bg); border-color:rgba(255,255,255,0.06)">
           <img v-if="p.image" :src="'/images/'+p.image" class="w-full h-full object-cover" />
           <div v-else class="w-full h-full flex items-center justify-center" style="color:#2C333A">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -54,13 +54,13 @@
         <!-- Info -->
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
-            <span class="text-sm font-semibold" style="color:#DEE4EA">{{ p.name }}</span>
+            <span class="text-sm font-semibold" style="color:var(--text-primary)">{{ p.name }}</span>
             <span class="text-[10px] px-1.5 py-0.5 rounded-md font-medium" style="background:rgba(168,85,247,0.1); color:#c4b5fd">{{ p.categoryName || '未分类' }}</span>
             <span class="text-[10px] px-1.5 py-0.5 rounded-md" style="background:rgba(148,163,184,0.06); color:#94a3b8">{{ p.material }}</span>
           </div>
           <div class="flex items-center gap-4 mt-1">
             <span class="text-sm font-mono font-bold" style="color:#34d399">¥{{ p.price }}</span>
-            <span class="text-xs" style="color:#596773">{{ p.description?.substring(0,40) }}{{ (p.description||'').length>40?'...':'' }}</span>
+            <span class="text-xs" style="color:var(--text-muted)">{{ p.description?.substring(0,40) }}{{ (p.description||'').length>40?'...':'' }}</span>
           </div>
         </div>
 

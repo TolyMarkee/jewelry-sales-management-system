@@ -2,8 +2,8 @@
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-lg font-bold" style="color:#DEE4EA">订单管理</h2>
-        <p class="text-xs mt-0.5" style="color:#596773">共 {{ total }} 笔订单</p>
+        <h2 class="text-lg font-bold" style="color:var(--text-primary)">订单管理</h2>
+        <p class="text-xs mt-0.5" style="color:var(--text-muted)">共 {{ total }} 笔订单</p>
       </div>
       <button @click="handleAdd" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-105 active:scale-95 shadow-lg" style="background:linear-gradient(135deg,#a855f7,#6366f1); color:#fff; box-shadow:0 4px 24px rgba(168,85,247,0.3)">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
@@ -14,10 +14,10 @@
     <!-- Search -->
     <div class="flex gap-3 flex-wrap">
       <div class="relative">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2" style="color:#596773" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input v-model="search.orderNo" placeholder="搜索订单编号..." class="h-9 pl-9 pr-3 rounded-lg text-sm outline-none w-52 transition-all focus:w-64" style="background:#101214; border:1px solid #2C333A; color:#DEE4EA" @keyup.enter="loadData" />
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2" style="color:var(--text-muted)" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input v-model="search.orderNo" placeholder="搜索订单编号..." class="h-9 pl-9 pr-3 rounded-lg text-sm outline-none w-52 transition-all focus:w-64" style="background:var(--bg); border:1px solid #2C333A; color:#DEE4EA" @keyup.enter="loadData" />
       </div>
-      <select v-model="search.status" @change="loadData" class="h-9 px-3 rounded-lg text-sm outline-none cursor-pointer" style="background:#101214; border:1px solid #2C333A; color:#94a3b8">
+      <select v-model="search.status" @change="loadData" class="h-9 px-3 rounded-lg text-sm outline-none cursor-pointer" style="background:var(--bg); border:1px solid #2C333A; color:#94a3b8">
         <option value="">全部状态</option><option v-for="o in statusOpts" :key="o.value" :value="o.value">{{ o.label }}</option>
       </select>
     </div>
@@ -30,7 +30,7 @@
       <div class="space-y-3">
         <div v-for="(o, idx) in tableData" :key="o.id"
           class="group relative md:ml-10 rounded-2xl transition-all duration-300 hover:-translate-y-0.5"
-          style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.04); box-shadow:0 1px 3px rgba(0,0,0,0.3)"
+          style="background:var(--surface); border:1px solid var(--border); box-shadow:0 1px 3px rgba(0,0,0,0.3)"
         >
           <!-- Timeline dot -->
           <div class="absolute -left-[28px] top-5 w-3 h-3 rounded-full border-2 hidden md:block transition-all group-hover:scale-125" :style="{background:statusColor(o.status), borderColor:statusColor(o.status), boxShadow:`0 0 12px ${statusColor(o.status)}40`}" />
@@ -38,14 +38,14 @@
           <div class="p-4">
             <div class="flex items-start justify-between flex-wrap gap-2">
               <div class="flex items-center gap-3">
-                <span class="text-sm font-mono font-bold tracking-wider" style="color:#DEE4EA"># {{ o.orderNo }}</span>
+                <span class="text-sm font-mono font-bold tracking-wider" style="color:var(--text-primary)"># {{ o.orderNo }}</span>
                 <AnimatedStatusBadge :status="o.status" />
               </div>
               <span class="text-lg font-bold" :style="{color:o.status==='completed'?'#34d399':'#f59e0b'}">¥{{ o.totalAmount }}</span>
             </div>
 
             <!-- Meta row -->
-            <div class="flex items-center gap-3 mt-2.5 text-xs" style="color:#596773">
+            <div class="flex items-center gap-3 mt-2.5 text-xs" style="color:var(--text-muted)">
               <div class="flex items-center gap-1">
                 <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px]" style="background:rgba(96,165,250,0.15); color:#60a5fa">{{ (o.customerName||'?')[0] }}</div>
                 {{ o.customerName }}
@@ -74,7 +74,7 @@
       <!-- Empty state -->
       <div v-if="tableData.length===0" class="text-center py-16">
         <div class="text-4xl mb-3 opacity-20">📋</div>
-        <div class="text-sm" style="color:#596773">暂无订单记录</div>
+        <div class="text-sm" style="color:var(--text-muted)">暂无订单记录</div>
         <button @click="handleAdd" class="mt-3 text-xs font-medium transition-all hover:scale-105" style="color:#a855f7">创建第一笔订单 →</button>
       </div>
     </div>
@@ -87,7 +87,7 @@
         <el-form-item label="客户"><el-select v-model="orderForm.customerId" filterable class="w-full"><el-option v-for="c in custList" :key="c.id" :label="c.name+' - '+c.phone" :value="c.id" /></el-select></el-form-item>
         <el-form-item label="备注"><el-input v-model="orderForm.remark" type="textarea" :rows="2" /></el-form-item>
       </el-form>
-      <div class="text-sm font-semibold mb-2" style="color:#DEE4EA">订单明细</div>
+      <div class="text-sm font-semibold mb-2" style="color:var(--text-primary)">订单明细</div>
       <div v-for="(item,i) in orderForm.items" :key="i" class="flex items-center gap-2 mb-2">
         <el-select v-model="item.productId" filterable size="small" class="flex-1" @change="onProdChange(item)"><el-option v-for="p in prodList" :key="p.id" :label="p.name+' (¥'+p.price+')'" :value="p.id" /></el-select>
         <span class="text-xs w-16" style="color:#34d399">¥{{ item.price }}</span>
@@ -105,15 +105,15 @@
     <!-- Detail dialog -->
     <el-dialog v-model="detailVisible" title="订单详情" width="500px">
       <template v-if="curOrder">
-        <div class="space-y-2 text-sm" style="color:#94a3b8">
-          <p>订单编号：<span style="color:#DEE4EA">{{ curOrder.orderNo }}</span></p>
-          <p>客户：<span style="color:#DEE4EA">{{ curOrder.customerName }}</span></p>
-          <p>销售员：<span style="color:#DEE4EA">{{ curOrder.userName }}</span></p>
+        <div class="space-y-2 text-sm" style="color:var(--text-secondary)">
+          <p>订单编号：<span style="color:var(--text-primary)">{{ curOrder.orderNo }}</span></p>
+          <p>客户：<span style="color:var(--text-primary)">{{ curOrder.customerName }}</span></p>
+          <p>销售员：<span style="color:var(--text-primary)">{{ curOrder.userName }}</span></p>
           <p>状态：<AnimatedStatusBadge :status="curOrder.status" /></p>
         </div>
         <div class="mt-4 space-y-1">
           <div v-for="item in curOrder.items" :key="item.id" class="flex justify-between text-sm py-1.5 border-b" style="border-color:rgba(255,255,255,0.04)">
-            <span style="color:#DEE4EA">{{ item.productName }}</span><span style="color:#596773">x{{ item.quantity }} · ¥{{ item.price }}</span>
+            <span style="color:var(--text-primary)">{{ item.productName }}</span><span style="color:var(--text-muted)">x{{ item.quantity }} · ¥{{ item.price }}</span>
           </div>
         </div>
         <div class="text-right mt-3 text-lg font-bold" style="color:#34d399">¥{{ curOrder.totalAmount }}</div>

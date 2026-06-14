@@ -4,16 +4,16 @@
     <div class="flex gap-4">
       <div class="flex-1 rounded-2xl p-6 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(99,102,241,0.1)); border:1px solid rgba(168,85,247,0.15)">
         <div class="relative z-10">
-          <h2 class="text-xl font-bold" style="color:#DEE4EA">欢迎回来，{{ userStore.user?.realName || userStore.user?.username }}</h2>
-          <p class="text-sm mt-1" style="color:#596773">{{ today }} · {{ greeting }}</p>
+          <h2 class="text-xl font-bold" style="color:var(--text-primary)">欢迎回来，{{ userStore.user?.realName || userStore.user?.username }}</h2>
+          <p class="text-sm mt-1" style="color:var(--text-muted)">{{ today }} · {{ greeting }}</p>
         </div>
         <div class="absolute right-4 top-1/2 -translate-y-1/2 text-6xl opacity-10" style="color:#a855f7">✦</div>
       </div>
-      <div class="w-60 rounded-2xl p-5 flex items-center gap-4" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)">
+      <div class="w-60 rounded-2xl p-5 flex items-center gap-4" style="background:rgba(22,26,29,0.5); border:1px solid var(--border)">
         <span class="text-3xl">{{ weatherIcon }}</span>
         <div>
-          <div class="text-xs" style="color:#596773">{{ weather.city || '获取天气...' }}</div>
-          <div class="text-2xl font-bold" style="color:#DEE4EA">{{ weather.temp || '--' }}°</div>
+          <div class="text-xs" style="color:var(--text-muted)">{{ weather.city || '获取天气...' }}</div>
+          <div class="text-2xl font-bold" style="color:var(--text-primary)">{{ weather.temp || '--' }}°</div>
         </div>
       </div>
     </div>
@@ -22,14 +22,14 @@
     <div class="grid grid-cols-4 gap-4">
       <div v-for="s in statCards" :key="s.label"
         class="group rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg relative overflow-hidden"
-        style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)"
+        style="background:rgba(22,26,29,0.5); border:1px solid var(--border)"
         @click="s.link && router.push(s.link)"
       >
         <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" :style="{background:`radial-gradient(circle at top right, ${s.glow}33, transparent 60%)`}" />
         <div class="flex items-start justify-between relative z-10">
           <div>
-            <div class="text-xs mb-1" style="color:#596773">{{ s.label }}</div>
-            <div class="text-3xl font-bold" style="color:#DEE4EA">{{ s.value }}</div>
+            <div class="text-xs mb-1" style="color:var(--text-muted)">{{ s.label }}</div>
+            <div class="text-3xl font-bold" style="color:var(--text-primary)">{{ s.value }}</div>
           </div>
           <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" :style="{background:`${s.color}18`, color:s.color}">
             <component :is="s.icon" class="w-5 h-5" />
@@ -40,16 +40,16 @@
 
     <!-- Charts + Stock -->
     <div class="flex gap-4">
-      <div class="flex-[2] rounded-2xl p-5" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)">
-        <div class="text-sm font-semibold mb-4" style="color:#DEE4EA">近14天销售额趋势</div>
+      <div class="flex-[2] rounded-2xl p-5" style="background:rgba(22,26,29,0.5); border:1px solid var(--border)">
+        <div class="text-sm font-semibold mb-4" style="color:var(--text-primary)">近14天销售额趋势</div>
         <div ref="barChart" style="height:260px" />
       </div>
-      <div class="flex-1 rounded-2xl p-5" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)">
-        <div class="text-sm font-semibold mb-3" style="color:#DEE4EA">库存预警</div>
-        <div v-if="lowStock.length===0" class="text-center py-8"><div class="text-4xl mb-2">✅</div><div class="text-xs" style="color:#596773">库存充足，无需补货</div></div>
+      <div class="flex-1 rounded-2xl p-5" style="background:rgba(22,26,29,0.5); border:1px solid var(--border)">
+        <div class="text-sm font-semibold mb-3" style="color:var(--text-primary)">库存预警</div>
+        <div v-if="lowStock.length===0" class="text-center py-8"><div class="text-4xl mb-2">✅</div><div class="text-xs" style="color:var(--text-muted)">库存充足，无需补货</div></div>
         <div v-else class="space-y-2">
           <div v-for="p in lowStock" :key="p.id" class="flex items-center justify-between py-2 border-b border-white/[0.04]">
-            <span class="text-sm truncate" style="color:#DEE4EA">{{ p.name }}</span>
+            <span class="text-sm truncate" style="color:var(--text-primary)">{{ p.name }}</span>
             <span class="text-xs px-2 py-0.5 rounded-full" :style="{background:p.stock===0?'rgba(239,68,68,0.2)':'rgba(250,204,21,0.2)', color:p.stock===0?'#ef4444':'#facc15'}">{{ p.stock }}</span>
           </div>
         </div>

@@ -1,19 +1,19 @@
 <template>
   <div class="max-w-2xl mx-auto space-y-6">
-    <h2 class="text-lg font-bold" style="color:#DEE4EA">个人中心</h2>
+    <h2 class="text-lg font-bold" style="color:var(--text-primary)">个人中心</h2>
 
     <!-- Avatar card -->
-    <div class="rounded-2xl p-6 flex items-center gap-6" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)">
+    <div class="rounded-2xl p-6 flex items-center gap-6" style="background:var(--surface); border:1px solid var(--border)">
       <div class="relative">
         <div class="w-20 h-20 rounded-full p-[3px]" style="background:linear-gradient(135deg,#a855f7,#6366f1,#a855f7)" />
         <el-upload action="/api/upload/avatar" :headers="uploadHeaders" :show-file-list="false" :on-success="onAvatarSuccess" :before-upload="onAvatarBefore" class="absolute inset-0 flex items-center justify-center">
           <img v-if="form.avatar" :src="'/images/'+form.avatar" class="w-20 h-20 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity" />
-          <div v-else class="w-20 h-20 rounded-full flex items-center justify-center cursor-pointer text-2xl font-bold text-white" style="background:#101214">{{ (form.realName||form.username||'?')[0] }}</div>
+          <div v-else class="w-20 h-20 rounded-full flex items-center justify-center cursor-pointer text-2xl font-bold text-white" style="background:var(--bg)">{{ (form.realName||form.username||'?')[0] }}</div>
         </el-upload>
       </div>
       <div>
-        <div class="text-lg font-bold" style="color:#DEE4EA">{{ form.realName || form.username }}</div>
-        <div class="text-xs mt-1" style="color:#596773">{{ form.role==='admin'?'管理员':'销售员' }} · {{ form.email || '未设置邮箱' }}</div>
+        <div class="text-lg font-bold" style="color:var(--text-primary)">{{ form.realName || form.username }}</div>
+        <div class="text-xs mt-1" style="color:var(--text-muted)">{{ form.role==='admin'?'管理员':'销售员' }} · {{ form.email || '未设置邮箱' }}</div>
         <button @click="saveProfile" :disabled="saving" class="mt-2 px-3 py-1 rounded-lg text-xs font-medium transition-all hover:scale-105" style="background:rgba(168,85,247,0.15); color:#c4b5fd">
           {{ saving?'保存中...':'更新头像' }}
         </button>
@@ -21,28 +21,28 @@
     </div>
 
     <!-- Profile form -->
-    <div class="rounded-2xl p-6 space-y-5" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)">
-      <div class="text-sm font-semibold mb-4" style="color:#DEE4EA">基本信息</div>
+    <div class="rounded-2xl p-6 space-y-5" style="background:var(--surface); border:1px solid var(--border)">
+      <div class="text-sm font-semibold mb-4" style="color:var(--text-primary)">基本信息</div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs mb-1.5" style="color:#596773">用户名</label>
-          <input v-model="form.username" disabled class="w-full h-10 px-3 rounded-lg text-sm outline-none" style="background:#101214; border:1px solid #2C333A; color:#596773" />
+          <label class="block text-xs mb-1.5" style="color:var(--text-muted)">用户名</label>
+          <input v-model="form.username" disabled class="w-full h-10 px-3 rounded-lg text-sm outline-none" style="background:var(--bg); border:1px solid #2C333A; color:#596773" />
         </div>
         <div>
-          <label class="block text-xs mb-1.5" style="color:#596773">角色</label>
-          <input :value="form.role==='admin'?'管理员':'销售员'" disabled class="w-full h-10 px-3 rounded-lg text-sm outline-none" style="background:#101214; border:1px solid #2C333A; color:#596773" />
+          <label class="block text-xs mb-1.5" style="color:var(--text-muted)">角色</label>
+          <input :value="form.role==='admin'?'管理员':'销售员'" disabled class="w-full h-10 px-3 rounded-lg text-sm outline-none" style="background:var(--bg); border:1px solid #2C333A; color:#596773" />
         </div>
         <div>
-          <label class="block text-xs mb-1.5" style="color:#596773">真实姓名</label>
-          <input v-model="form.realName" class="w-full h-10 px-3 rounded-lg text-sm outline-none transition-all focus:border-purple-500/50" style="background:#101214; border:1px solid #2C333A; color:#DEE4EA" />
+          <label class="block text-xs mb-1.5" style="color:var(--text-muted)">真实姓名</label>
+          <input v-model="form.realName" class="w-full h-10 px-3 rounded-lg text-sm outline-none transition-all focus:border-purple-500/50" style="background:var(--bg); border:1px solid #2C333A; color:#DEE4EA" />
         </div>
         <div>
-          <label class="block text-xs mb-1.5" style="color:#596773">手机号</label>
-          <input v-model="form.phone" class="w-full h-10 px-3 rounded-lg text-sm outline-none transition-all focus:border-purple-500/50" style="background:#101214; border:1px solid #2C333A; color:#DEE4EA" />
+          <label class="block text-xs mb-1.5" style="color:var(--text-muted)">手机号</label>
+          <input v-model="form.phone" class="w-full h-10 px-3 rounded-lg text-sm outline-none transition-all focus:border-purple-500/50" style="background:var(--bg); border:1px solid #2C333A; color:#DEE4EA" />
         </div>
         <div class="col-span-2">
-          <label class="block text-xs mb-1.5" style="color:#596773">邮箱</label>
-          <input v-model="form.email" class="w-full h-10 px-3 rounded-lg text-sm outline-none transition-all focus:border-purple-500/50" style="background:#101214; border:1px solid #2C333A; color:#DEE4EA" />
+          <label class="block text-xs mb-1.5" style="color:var(--text-muted)">邮箱</label>
+          <input v-model="form.email" class="w-full h-10 px-3 rounded-lg text-sm outline-none transition-all focus:border-purple-500/50" style="background:var(--bg); border:1px solid #2C333A; color:#DEE4EA" />
         </div>
       </div>
       <button @click="saveProfile" :disabled="saving" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-105 disabled:opacity-50" style="background:linear-gradient(135deg,#a855f7,#6366f1); color:#fff">
@@ -52,12 +52,12 @@
     </div>
 
     <!-- Password -->
-    <div class="rounded-2xl p-6 space-y-4" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)">
-      <div class="text-sm font-semibold" style="color:#DEE4EA">修改密码</div>
+    <div class="rounded-2xl p-6 space-y-4" style="background:var(--surface); border:1px solid var(--border)">
+      <div class="text-sm font-semibold" style="color:var(--text-primary)">修改密码</div>
       <div class="grid grid-cols-3 gap-4">
-        <input v-model="pwd.oldPassword" type="password" placeholder="原密码" class="h-10 px-3 rounded-lg text-sm outline-none" style="background:#101214; border:1px solid #2C333A; color:#DEE4EA" />
-        <input v-model="pwd.newPassword" type="password" placeholder="新密码" class="h-10 px-3 rounded-lg text-sm outline-none" style="background:#101214; border:1px solid #2C333A; color:#DEE4EA" />
-        <input v-model="pwd.confirmPassword" type="password" placeholder="确认新密码" class="h-10 px-3 rounded-lg text-sm outline-none" style="background:#101214; border:1px solid #2C333A; color:#DEE4EA" />
+        <input v-model="pwd.oldPassword" type="password" placeholder="原密码" class="h-10 px-3 rounded-lg text-sm outline-none" style="background:var(--bg); border:1px solid #2C333A; color:#DEE4EA" />
+        <input v-model="pwd.newPassword" type="password" placeholder="新密码" class="h-10 px-3 rounded-lg text-sm outline-none" style="background:var(--bg); border:1px solid #2C333A; color:#DEE4EA" />
+        <input v-model="pwd.confirmPassword" type="password" placeholder="确认新密码" class="h-10 px-3 rounded-lg text-sm outline-none" style="background:var(--bg); border:1px solid #2C333A; color:#DEE4EA" />
       </div>
       <button @click="changePwd" :disabled="pwdLoading" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-105" style="background:rgba(250,204,21,0.15); color:#facc15">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>

@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-bold" style="color:#DEE4EA">库存管理</h2>
+      <h2 class="text-lg font-bold" style="color:var(--text-primary)">库存管理</h2>
       <div class="flex gap-2">
         <button @click="handleIn" class="px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105" style="background:rgba(52,211,153,0.15); color:#34d399">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="inline mr-1"><path d="M12 5v14"/><path d="M5 12h14"/></svg>入库
@@ -18,11 +18,11 @@
     </div>
 
     <div class="space-y-2">
-      <div v-for="r in tableData" :key="r.id" class="flex items-center gap-4 px-4 py-3 rounded-xl" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.04)">
+      <div v-for="r in tableData" :key="r.id" class="flex items-center gap-4 px-4 py-3 rounded-xl" style="background:var(--surface); border:1px solid var(--border)">
         <span class="text-[10px] px-2 py-0.5 rounded-full font-medium w-12 text-center flex-shrink-0" :style="r.type==='in'?{background:'rgba(52,211,153,0.15)',color:'#34d399'}:{background:'rgba(245,158,11,0.15)',color:'#f59e0b'}">{{ r.type==='in'?'入库':'出库' }}</span>
-        <div class="flex-1 min-w-0"><span class="text-sm" style="color:#DEE4EA">{{ r.productName }}</span><span class="text-xs ml-2" style="color:#596773">{{ r.remark || '' }}</span></div>
+        <div class="flex-1 min-w-0"><span class="text-sm" style="color:var(--text-primary)">{{ r.productName }}</span><span class="text-xs ml-2" style="color:var(--text-muted)">{{ r.remark || '' }}</span></div>
         <span class="text-sm font-bold" :style="{color:r.type==='in'?'#34d399':'#f59e0b'}">{{ r.type==='in'?'+':'-' }}{{ r.quantity }}</span>
-        <span class="text-xs flex-shrink-0" style="color:#596773">{{ r.createTime?.substring(0,16) }}</span>
+        <span class="text-xs flex-shrink-0" style="color:var(--text-muted)">{{ r.createTime?.substring(0,16) }}</span>
       </div>
     </div>
 

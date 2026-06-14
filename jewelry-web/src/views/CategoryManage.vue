@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-3xl mx-auto space-y-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-bold" style="color:#DEE4EA">分类管理</h2>
+      <h2 class="text-lg font-bold" style="color:var(--text-primary)">分类管理</h2>
       <button @click="handleAdd" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105" style="background:rgba(168,85,247,0.2); color:#c4b5fd; border:1px solid rgba(168,85,247,0.25)">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
         新建分类
@@ -13,7 +13,7 @@
       <div
         v-for="(cat, idx) in tableData" :key="cat.id"
         class="group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 hover:translate-x-1 relative overflow-hidden"
-        style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.04)"
+        style="background:var(--surface); border:1px solid var(--border)"
       >
         <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" :style="{background:`linear-gradient(90deg, ${colors[idx%5]}15, transparent 40%)`}" />
 
@@ -25,11 +25,11 @@
         </div>
 
         <div class="flex-1 min-w-0 relative z-10">
-          <div class="text-sm font-medium" style="color:#DEE4EA">{{ cat.name }}</div>
-          <div class="text-xs mt-0.5 truncate" style="color:#596773">{{ cat.description || '暂无描述' }}</div>
+          <div class="text-sm font-medium" style="color:var(--text-primary)">{{ cat.name }}</div>
+          <div class="text-xs mt-0.5 truncate" style="color:var(--text-muted)">{{ cat.description || '暂无描述' }}</div>
         </div>
 
-        <div class="text-xs flex-shrink-0 relative z-10" style="color:#596773">{{ cat.createTime?.substring(0,10) }}</div>
+        <div class="text-xs flex-shrink-0 relative z-10" style="color:var(--text-muted)">{{ cat.createTime?.substring(0,10) }}</div>
 
         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
           <button @click="handleEdit(cat)" class="w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:scale-110" style="color:#60a5fa" title="编辑">
@@ -44,7 +44,7 @@
 
     <div v-if="tableData.length===0" class="text-center py-16">
       <div class="text-4xl mb-3 opacity-30">📁</div>
-      <div class="text-sm" style="color:#596773">暂无分类，点击上方按钮创建</div>
+      <div class="text-sm" style="color:var(--text-muted)">暂无分类，点击上方按钮创建</div>
     </div>
 
     <!-- Dialog -->

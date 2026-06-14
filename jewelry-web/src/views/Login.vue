@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen w-full overflow-hidden" style="background:#101214">
+  <div class="flex h-screen w-full overflow-hidden" style="background:var(--bg)">
     <!-- Left: Form area -->
     <div
       class="relative w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-12"
@@ -37,33 +37,33 @@
               </div>
             </div>
           </div>
-          <h2 class="mb-1 flex items-center justify-center gap-2 text-2xl font-bold" style="color:#DEE4EA">
+          <h2 class="mb-1 flex items-center justify-center gap-2 text-2xl font-bold" style="color:var(--text-primary)">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             珠宝首饰销售管理
           </h2>
-          <p class="text-sm" style="color:#596773">登录你的账户以继续</p>
+          <p class="text-sm" style="color:var(--text-muted)">登录你的账户以继续</p>
         </div>
         <div class="flex justify-center gap-3 md:gap-4 mb-4">
-          <a v-for="(s, i) in socialIcons" :key="i" href="#" class="w-10 h-10 md:w-12 md:h-12 rounded-full flex justify-center items-center relative z-[1] overflow-hidden group border-2" style="background:#1D2125; border-color:#C7D1DB">
-            <div class="absolute inset-0 w-full h-full scale-y-0 origin-bottom transition-transform duration-500 ease-in-out group-hover:scale-y-100" style="background:#C7D1DB" />
-            <span class="text-lg relative z-[2] transition-all duration-500 ease-in-out group-hover:text-[#161A1D]" style="color:#C7D1DB" v-html="s" />
+          <a v-for="(s, i) in socialIcons" :key="i" href="#" class="w-10 h-10 md:w-12 md:h-12 rounded-full flex justify-center items-center relative z-[1] overflow-hidden group border-2" style="background:var(--input-bg); border-color:var(--text-primary)">
+            <div class="absolute inset-0 w-full h-full scale-y-0 origin-bottom transition-transform duration-500 ease-in-out group-hover:scale-y-100" style="background:var(--text-primary)" />
+            <span class="text-lg relative z-[2] transition-all duration-500 ease-in-out group-hover:text-[#161A1D]" style="color:var(--text-primary)" v-html="s" />
           </a>
         </div>
-        <p class="text-center text-xs mb-6" style="color:#596773">或使用账号密码登录</p>
+        <p class="text-center text-xs mb-6" style="color:var(--text-muted)">或使用账号密码登录</p>
         <div class="space-y-4">
           <AppInput v-model="form.username" placeholder="用户名" icon="user" @enter="handleLogin" />
           <AppInput v-model="form.password" placeholder="密码" icon="lock" type="password" @enter="handleLogin" />
         </div>
-        <a href="#" class="text-right text-xs mt-2 block hover:underline" style="color:#596773">忘记密码？</a>
+        <a href="#" class="text-right text-xs mt-2 block hover:underline" style="color:var(--text-muted)">忘记密码？</a>
         <div class="flex justify-center mt-5">
-          <button :disabled="loading" class="group/button relative inline-flex justify-center items-center overflow-hidden rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer disabled:opacity-60" style="background:#2C333A; --tw-shadow-color: #C7D1DB" @click="handleLogin">
+          <button :disabled="loading" class="group/button relative inline-flex justify-center items-center overflow-hidden rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer disabled:opacity-60" style="background:var(--border-strong)" @click="handleLogin">
             <span class="text-sm px-3 py-1">{{ loading ? '验证中...' : '登 录' }}</span>
             <div class="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
               <div class="relative h-full w-8 bg-white/20" />
             </div>
           </button>
         </div>
-        <p class="text-center text-xs mt-4" style="color:#596773">默认账号 admin / 123456</p>
+        <p class="text-center text-xs mt-4" style="color:var(--text-muted)">默认账号 admin / 123456</p>
       </div>
     </div>
     <!-- Right: Image -->

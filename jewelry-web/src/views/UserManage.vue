@@ -1,21 +1,21 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-bold" style="color:#DEE4EA">用户管理</h2>
+      <h2 class="text-lg font-bold" style="color:var(--text-primary)">用户管理</h2>
       <button @click="handleAdd" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105" style="background:linear-gradient(135deg,#a855f7,#6366f1); color:#fff">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>新增用户
       </button>
     </div>
 
     <div class="space-y-2">
-      <div v-for="u in tableData" :key="u.id" class="group flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:translate-x-1" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.04)">
+      <div v-for="u in tableData" :key="u.id" class="group flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:translate-x-1" style="background:var(--surface); border:1px solid var(--border)">
         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" :style="{background:u.role==='admin'?'rgba(239,68,68,0.15)':'rgba(96,165,250,0.15)', color:u.role==='admin'?'#ef4444':'#60a5fa'}">{{ (u.realName||u.username)[0] }}</div>
         <div class="flex-1 min-w-0">
-          <div class="text-sm font-medium" style="color:#DEE4EA">{{ u.realName || u.username }}</div>
-          <div class="text-xs mt-0.5" style="color:#596773">@{{ u.username }} · {{ u.phone || '未填电话' }}</div>
+          <div class="text-sm font-medium" style="color:var(--text-primary)">{{ u.realName || u.username }}</div>
+          <div class="text-xs mt-0.5" style="color:var(--text-muted)">@{{ u.username }} · {{ u.phone || '未填电话' }}</div>
         </div>
         <span class="text-[10px] px-2 py-0.5 rounded-full font-medium" :style="{background:u.role==='admin'?'rgba(239,68,68,0.15)':'rgba(96,165,250,0.15)', color:u.role==='admin'?'#ef4444':'#60a5fa'}">{{ u.role==='admin'?'管理员':'销售员' }}</span>
-        <span class="text-xs flex-shrink-0" style="color:#596773">{{ u.createTime?.substring(0,10) }}</span>
+        <span class="text-xs flex-shrink-0" style="color:var(--text-muted)">{{ u.createTime?.substring(0,10) }}</span>
         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button @click="handleEdit(u)" class="w-7 h-7 rounded-lg flex items-center justify-center hover:scale-110 transition-all" style="color:#60a5fa"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
           <button @click="handleDelete(u)" class="w-7 h-7 rounded-lg flex items-center justify-center hover:scale-110 transition-all" style="color:#ef4444"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>

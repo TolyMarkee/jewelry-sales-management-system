@@ -3,7 +3,7 @@
     <div
       class="relative flex items-center rounded-xl transition-all duration-500 ease-out overflow-hidden"
       :class="expanded ? 'w-56' : 'w-9'"
-      style="background:#101214; border:1px solid #2C333A"
+      :style="{background:'var(--input-bg)', border:'1px solid var(--border-strong)'}"
     >
       <button
         class="w-9 h-9 flex items-center justify-center flex-shrink-0 transition-colors"
@@ -21,7 +21,7 @@
         :placeholder="placeholder"
         class="h-9 bg-transparent outline-none text-sm pr-3 transition-opacity duration-300"
         :class="expanded ? 'opacity-100 w-full' : 'opacity-0 w-0'"
-        style="color:#DEE4EA"
+        style="color:var(--text-primary)"
       />
     </div>
     <!-- Glow ring on expand -->
