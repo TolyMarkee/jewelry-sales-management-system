@@ -1,124 +1,42 @@
 <template>
-  <div class="container">
-    <el-row :gutter="20">
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-num">{{ stats.totalProducts }}</div>
-          <div class="stat-label">商品总数</div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-num">{{ stats.totalOrders }}</div>
-          <div class="stat-label">订单总数</div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-num">{{ stats.totalCustomers }}</div>
-          <div class="stat-label">客户总数</div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-num" style="color:#f56c6c">¥{{ stats.totalSales }}</div>
-          <div class="stat-label">销售总额</div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <el-row :gutter="20" style="margin-top:20px">
-      <el-col :span="12">
-        <el-card>
-          <div slot="header"><span>订单状态分布</span></div>
-          <div ref="pieChart" style="height:350px" />
-        </el-card>
-      </el-col>
-      <el-col :span="12">
-        <el-card>
-          <div slot="header"><span>最近订单统计</span></div>
-          <div ref="barChart" style="height:350px" />
-        </el-card>
-      </el-col>
-    </el-row>
+  <div class="container-page space-y-5">
+    <div class="grid grid-cols-4 gap-5">
+      <div v-for="s in cards" :key="s.label" class="bg-white rounded-xl p-6 text-center"><div class="text-3xl font-bold" :style="{color:s.color}">{{ s.value }}</div><div class="text-gray-400 mt-1">{{ s.label }}</div></div>
+    </div>
+    <div class="flex gap-5">
+      <div class="flex-1 bg-white rounded-xl p-5"><div class="font-semibold mb-3">订单状态分布</div><div ref="pieChart" style="height:320px" /></div>
+      <div class="flex-1 bg-white rounded-xl p-5"><div class="font-semibold mb-3">最近订单统计</div><div ref="barChart" style="height:320px" /></div>
+    </div>
   </div>
 </template>
 
-<script>
-import * as echarts from 'echarts'
+<script setup>
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { getOrderList, getAllProducts, getAllCustomers } from '@/api'
+import * as echarts from 'echarts'
 
-export default {
-  name: 'SalesStatistics',
-  data() {
-    return {
-      stats: { totalProducts: 0, totalOrders: 0, totalCustomers: 0, totalSales: 0 }
-    }
-  },
-  mounted() { this.loadStats() },
-  methods: {
-    async loadStats() {
-      try {
-        const [prodRes, custRes, orderRes] = await Promise.all([
-          getAllProducts(),
-          getAllCustomers(),
-          getOrderList({ page: 1, limit: 1000 })
-        ])
-        this.stats.totalProducts = prodRes.data.length
-        this.stats.totalCustomers = custRes.data.length
-        this.stats.totalOrders = orderRes.data.total
-        this.stats.totalSales = orderRes.data.list
-          .filter(o => o.status !== 'cancelled')
-          .reduce((sum, o) => sum + parseFloat(o.totalAmount), 0).toFixed(2)
+const pieChart = ref(null); const barChart = ref(null)
+const cards = reactive([{ label: '商品总数', value: 0, color: '#409EFF' },{ label: '订单总数', value: 0, color: '#fa8c16' },{ label: '客户总数', value: 0, color: '#52c41a' },{ label: '销售总额', value: '¥0', color: '#f5222d' }])
 
-        this.$nextTick(() => {
-          this.initPieChart(orderRes.data.list)
-          this.initBarChart(orderRes.data.list)
-        })
-      } catch (e) { }
-    },
-    initPieChart(orders) {
-      if (!this.$refs.pieChart) return
-      const chart = echarts.init(this.$refs.pieChart)
-      // 按状态统计数量
-      const statusMap = {}
-      orders.forEach(o => {
-        const label = { pending: '待付款', paid: '已付款', shipped: '已发货', completed: '已完成', cancelled: '已取消' }[o.status] || o.status
-        statusMap[label] = (statusMap[label] || 0) + 1
-      })
-      chart.setOption({
-        tooltip: { trigger: 'item' },
-        legend: { bottom: 0 },
-        series: [{
-          type: 'pie', radius: ['40%', '70%'],
-          data: Object.entries(statusMap).map(([name, value]) => ({ name, value })),
-          emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.5)' } }
-        }]
-      })
-    },
-    initBarChart(orders) {
-      if (!this.$refs.barChart) return
-      const chart = echarts.init(this.$refs.barChart)
-      // 按日期统计销售额
-      const dayMap = {}
-      orders.filter(o => o.status !== 'cancelled').forEach(o => {
-        const day = o.createTime ? o.createTime.substring(0, 10) : '未知'
-        dayMap[day] = (dayMap[day] || 0) + parseFloat(o.totalAmount)
-      })
-      const days = Object.keys(dayMap).sort().slice(-14)
-      chart.setOption({
-        tooltip: { trigger: 'axis' },
-        xAxis: { type: 'category', data: days, axisLabel: { rotate: 30 } },
-        yAxis: { type: 'value', name: '销售额(元)' },
-        series: [{ type: 'bar', data: days.map(d => dayMap[d]), itemStyle: { color: '#409EFF' } }]
-      })
-    }
-  }
+onMounted(async () => {
+  try {
+    const [p,c,o] = await Promise.all([getAllProducts(), getAllCustomers(), getOrderList({page:1,limit:1000})])
+    cards[0].value = p.data.length; cards[1].value = o.data.total; cards[2].value = c.data.length
+    cards[3].value = '¥' + (o.data.list||[]).filter(x=>x.status!=='cancelled').reduce((s,x)=>s+parseFloat(x.totalAmount||0),0).toFixed(2)
+    await nextTick()
+    initPie(o.data.list||[]); initBar(o.data.list||[])
+  } catch {}
+})
+
+function initPie(orders) {
+  if (!pieChart.value) return; const c = echarts.init(pieChart.value); const m = {}
+  orders.forEach(o => { const l = {pending:'待付款',paid:'已付款',shipped:'已发货',completed:'已完成',cancelled:'已取消'}[o.status]||o.status; m[l]=(m[l]||0)+1 })
+  c.setOption({ tooltip:{trigger:'item'}, legend:{bottom:0}, series:[{ type:'pie', radius:['40%','70%'], data:Object.entries(m).map(([n,v])=>({name:n,value:v})) }] })
+}
+function initBar(orders) {
+  if (!barChart.value) return; const c = echarts.init(barChart.value); const m = {}
+  orders.filter(o=>o.status!=='cancelled').forEach(o => { const d=(o.createTime||'').substring(0,10); if(d) m[d]=(m[d]||0)+parseFloat(o.totalAmount||0) })
+  const days = Object.keys(m).sort().slice(-14)
+  c.setOption({ tooltip:{trigger:'axis'}, xAxis:{type:'category',data:days,axisLabel:{rotate:30}}, yAxis:{type:'value',name:'元'}, series:[{ type:'bar',data:days.map(d=>m[d]),itemStyle:{color:'#409EFF'} }] })
 }
 </script>
-
-<style scoped>
-.stat-card { text-align: center; }
-.stat-num { font-size: 32px; font-weight: bold; color: #409EFF; }
-.stat-label { margin-top: 5px; color: #999; }
-</style>

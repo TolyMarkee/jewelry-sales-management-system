@@ -1,164 +1,84 @@
 <template>
-  <div class="ai-assistant">
-    <!-- 浮动按钮 -->
-    <div v-if="!visible" class="ai-float-btn" @click="toggleChat">
-      <i class="el-icon-service" />
+  <div class="fixed right-6 bottom-6 z-[9999]">
+    <div v-if="!visible" class="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-2xl cursor-pointer flex items-center justify-center shadow-lg shadow-indigo-500/40 hover:scale-110 transition-transform" @click="visible = true">
+      <el-icon :size="24"><Service /></el-icon>
     </div>
 
-    <!-- 聊天窗口 -->
-    <transition name="slide-up">
-      <div v-if="visible" class="ai-chat-panel">
-        <div class="ai-chat-header">
-          <span><i class="el-icon-cpu" /> AI 助手</span>
-          <div>
-            <el-button type="text" size="mini" icon="el-icon-minus" @click="toggleChat" style="color:#fff" />
-            <el-button type="text" size="mini" icon="el-icon-close" @click="visible = false" style="color:#fff" />
-          </div>
-        </div>
-
-        <div class="ai-chat-body" ref="chatBody">
-          <div v-for="(msg, idx) in messages" :key="idx" :class="['msg-row', msg.role]">
-            <div class="msg-avatar">
-              <i v-if="msg.role === 'user'" class="el-icon-user" />
-              <i v-else class="el-icon-cpu" />
-            </div>
-            <div class="msg-bubble" v-html="formatMsg(msg.content)" />
-          </div>
-          <div v-if="loading" class="msg-row assistant">
-            <div class="msg-avatar"><i class="el-icon-cpu" /></div>
-            <div class="msg-bubble typing"><span>.</span><span>.</span><span>.</span></div>
-          </div>
-        </div>
-
-        <div class="ai-chat-footer">
-          <el-input v-model="input" placeholder="输入问题..." size="small" @keyup.enter.native="send">
-            <el-button slot="append" icon="el-icon-s-promotion" :disabled="!input.trim() || loading" @click="send" />
-          </el-input>
-          <div class="quick-actions">
-            <el-tag size="mini" @click="sendQuick('今天销售额怎么样？')">今日销售</el-tag>
-            <el-tag size="mini" @click="sendQuick('有哪些库存不足的商品？')">库存预警</el-tag>
-            <el-tag size="mini" @click="sendQuick('如何创建订单？')">使用帮助</el-tag>
-          </div>
+    <div v-if="visible" class="w-[380px] h-[520px] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
+      <div class="h-12 bg-gradient-to-r from-indigo-500 to-purple-600 text-white flex items-center justify-between px-3 text-sm flex-shrink-0">
+        <span><el-icon><Cpu /></el-icon> AI 助手</span>
+        <div>
+          <el-button text size="small" class="!text-white" @click="visible = false"><el-icon><Minus /></el-icon></el-button>
         </div>
       </div>
-    </transition>
+
+      <div ref="chatBody" class="flex-1 overflow-y-auto p-3 bg-gray-50 space-y-3">
+        <div v-for="(msg, i) in messages" :key="i" :class="['flex', msg.role === 'user' ? 'flex-row-reverse' : '']">
+          <div :class="msg.role === 'user' ? 'bg-blue-50 text-blue-500 ml-2' : 'bg-gray-100 text-gray-500 mr-2'" class="w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0">
+            <el-icon :size="14"><User v-if="msg.role === 'user'" /><Cpu v-else /></el-icon>
+          </div>
+          <div :class="msg.role === 'user' ? 'bg-blue-500 text-white rounded-tr-none' : 'bg-white text-gray-700 rounded-tl-none shadow-sm'" class="max-w-[260px] px-3 py-2 rounded-xl text-sm leading-relaxed break-words" v-html="formatMsg(msg.content)" />
+        </div>
+        <div v-if="loading" class="flex">
+          <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-2 flex-shrink-0"><el-icon :size="14"><Cpu /></el-icon></div>
+          <div class="bg-white px-4 py-2 rounded-xl rounded-tl-none shadow-sm"><span class="dot-typing" /></div>
+        </div>
+      </div>
+
+      <div class="p-3 border-t flex-shrink-0">
+        <el-input v-model="input" placeholder="输入问题..." size="small" @keyup.enter="send">
+          <template #append><el-button :disabled="!input.trim() || loading" @click="send"><el-icon><Promotion /></el-icon></el-button></template>
+        </el-input>
+        <div class="flex gap-2 mt-2">
+          <el-tag v-for="q in quickQs" :key="q" size="small" class="cursor-pointer hover:bg-blue-50 hover:text-blue-500" @click="sendQuick(q)">{{ q }}</el-tag>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, nextTick } from 'vue'
+import { Service, Cpu, Minus, User, Promotion } from '@element-plus/icons-vue'
 import request from '@/utils/request'
 
-export default {
-  name: 'AiAssistant',
-  data() {
-    return {
-      visible: false,
-      input: '',
-      loading: false,
-      messages: [
-        { role: 'assistant', content: '您好！我是珠宝销售管理系统的AI助手。我可以帮您解答系统使用问题、分析销售数据、提供珠宝知识建议等。试试问我吧！' }
-      ]
-    }
-  },
-  watch: {
-    visible(val) {
-      if (val) this.$nextTick(() => this.scrollBottom())
-    }
-  },
-  methods: {
-    toggleChat() {
-      this.visible = !this.visible
-    },
-    async send() {
-      const msg = this.input.trim()
-      if (!msg || this.loading) return
-      this.messages.push({ role: 'user', content: msg })
-      this.input = ''
-      this.loading = true
-      this.$nextTick(() => this.scrollBottom())
+const visible = ref(false)
+const input = ref('')
+const loading = ref(false)
+const chatBody = ref(null)
+const messages = ref([{ role: 'assistant', content: '您好！我是珠宝销售管理系统的AI助手，有什么可以帮您的？' }])
+const quickQs = ['今日销售如何？', '库存预警？', '如何创建订单？']
 
-      try {
-        const res = await request.post('/ai/chat', { message: msg })
-        const reply = res.data.reply || '抱歉，我暂时无法回答这个问题。'
-        this.messages.push({ role: 'assistant', content: reply })
-      } catch (e) {
-        this.messages.push({ role: 'assistant', content: '网络异常，请稍后重试。' })
-      } finally {
-        this.loading = false
-        this.$nextTick(() => this.scrollBottom())
-      }
-    },
-    sendQuick(text) {
-      this.input = text
-      this.send()
-    },
-    scrollBottom() {
-      const el = this.$refs.chatBody
-      if (el) el.scrollTop = el.scrollHeight
-    },
-    formatMsg(text) {
-      return text.replace(/\n/g, '<br>').replace(/`([^`]+)`/g, '<code>$1</code>')
-    }
+function formatMsg(text) { return text.replace(/\n/g, '<br>').replace(/`([^`]+)`/g, '<code>$1</code>') }
+
+async function send() {
+  const msg = input.value.trim()
+  if (!msg || loading.value) return
+  messages.value.push({ role: 'user', content: msg })
+  input.value = ''
+  loading.value = true
+  await nextTick()
+  chatBody.value.scrollTop = chatBody.value.scrollHeight
+  try {
+    const res = await request.post('/ai/chat', { message: msg })
+    messages.value.push({ role: 'assistant', content: res.data.reply || '抱歉，无法回答' })
+  } catch {
+    messages.value.push({ role: 'assistant', content: '网络异常，请稍后重试' })
+  } finally {
+    loading.value = false
+    await nextTick()
+    chatBody.value.scrollTop = chatBody.value.scrollHeight
   }
 }
+
+function sendQuick(text) { input.value = text; send() }
 </script>
 
 <style scoped>
-.ai-assistant { position: fixed; right: 24px; bottom: 24px; z-index: 9999; }
-
-.ai-float-btn {
-  width: 54px; height: 54px; border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff; font-size: 24px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-  transition: transform .3s;
-}
-.ai-float-btn:hover { transform: scale(1.1); }
-
-.ai-chat-panel {
-  width: 380px; height: 520px; background: #fff; border-radius: 12px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden;
-}
-
-.ai-chat-header {
-  height: 46px; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;
-  display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 15px;
-  flex-shrink: 0;
-}
-
-.ai-chat-body {
-  flex: 1; overflow-y: auto; padding: 12px; background: #f7f8fa;
-}
-.msg-row { display: flex; margin-bottom: 14px; }
-.msg-row.user { flex-direction: row-reverse; }
-.msg-avatar {
-  width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0;
-}
-.msg-row.user .msg-avatar { background: #e6f7ff; color: #1890ff; margin-left: 8px; }
-.msg-row.assistant .msg-avatar { background: #f0f0f0; color: #667eea; margin-right: 8px; }
-.msg-bubble {
-  max-width: 260px; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.6; word-break: break-word;
-}
-.msg-row.user .msg-bubble { background: #1890ff; color: #fff; border-top-right-radius: 4px; }
-.msg-row.assistant .msg-bubble { background: #fff; color: #333; border-top-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-
-.typing span {
-  display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #bbb; margin: 0 2px;
-  animation: blink 1.4s infinite both;
-}
-.typing span:nth-child(2) { animation-delay: .2s; }
-.typing span:nth-child(3) { animation-delay: .4s; }
-@keyframes blink { 0%,80%,100% { opacity: 0; } 40% { opacity: 1; } }
-
-.ai-chat-footer {
-  padding: 10px 12px; border-top: 1px solid #eee; flex-shrink: 0;
-}
-.quick-actions { margin-top: 8px; display: flex; gap: 6px; }
-.quick-actions .el-tag { cursor: pointer; }
-.quick-actions .el-tag:hover { background: #ecf5ff; color: #409EFF; }
-
-.slide-up-enter-active, .slide-up-leave-active { transition: all .3s ease; }
-.slide-up-enter, .slide-up-leave-to { opacity: 0; transform: translateY(20px); }
+.dot-typing { display: inline-flex; gap: 4px; padding: 4px 0; }
+.dot-typing::before, .dot-typing::after, .dot-typing { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #bbb; animation: dot-blink 1.4s infinite both; display: inline-block; }
+.dot-typing::before { animation-delay: 0s; content: ''; }
+.dot-typing { animation-delay: .2s; }
+.dot-typing::after { animation-delay: .4s; content: ''; }
+@keyframes dot-blink { 0%,80%,100% { opacity: 0 } 40% { opacity: 1 } }
 </style>

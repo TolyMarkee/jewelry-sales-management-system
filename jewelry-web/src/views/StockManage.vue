@@ -1,107 +1,43 @@
 <template>
-  <div class="container">
-    <div class="toolbar">
-      <el-button type="primary" size="small" icon="el-icon-plus" @click="handleIn">入库</el-button>
-      <el-button type="warning" size="small" icon="el-icon-minus" @click="handleOut">出库</el-button>
+  <div class="container-page">
+    <div class="toolbar flex gap-2">
+      <el-button type="primary" size="small" @click="handleIn"><el-icon><Plus /></el-icon>入库</el-button>
+      <el-button type="warning" size="small" @click="handleOut"><el-icon><Minus /></el-icon>出库</el-button>
     </div>
-
-    <!-- 库存预警提示 -->
-    <el-alert v-if="lowStockProducts.length > 0" :title="'库存预警：以下商品库存不足10件：' + lowStockProducts.map(p => p.name).join('、')"
-      type="warning" show-icon style="margin-bottom:15px" />
-
-    <el-table :data="tableData" border stripe v-loading="loading" style="width:100%">
-      <el-table-column prop="id" label="ID" width="60" />
-      <el-table-column prop="productName" label="商品名称" />
-      <el-table-column prop="type" label="类型" width="80">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.type==='in'?'success':'danger'" size="small">
-            {{ scope.row.type === 'in' ? '入库' : '出库' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="quantity" label="数量" width="80" />
-      <el-table-column prop="remark" label="备注" />
+    <el-alert v-if="lowStock.length" :title="'库存预警：' + lowStock.map(p=>p.name).join('、')" type="warning" show-icon class="mb-4" />
+    <el-table :data="tableData" border stripe v-loading="loading">
+      <el-table-column prop="id" label="ID" width="60" /><el-table-column prop="productName" label="商品" />
+      <el-table-column prop="type" label="类型" width="80"><template #default="s"><el-tag :type="s.row.type==='in'?'success':'danger'" size="small">{{ s.row.type==='in'?'入库':'出库' }}</el-tag></template></el-table-column>
+      <el-table-column prop="quantity" label="数量" width="80" /><el-table-column prop="remark" label="备注" />
       <el-table-column prop="createTime" label="时间" width="160" />
     </el-table>
-
-    <el-pagination style="margin-top:20px;text-align:right" :current-page="searchForm.page" :page-size="searchForm.limit"
-      :total="total" :page-sizes="[10, 20, 50]" layout="total, sizes, prev, pager, next"
-      @size-change="v => { searchForm.limit = v; loadData() }"
-      @current-change="v => { searchForm.page = v; loadData() }" />
-
-    <!-- 入库/出库弹窗 -->
-    <el-dialog :title="stockTitle" :visible.sync="dialogVisible" width="450px">
-      <el-form :model="stockForm" ref="stockFormRef" label-width="90px">
-        <el-form-item label="选择商品" prop="productId">
-          <el-select v-model="stockForm.productId" placeholder="请选择商品" style="width:100%" filterable>
-            <el-option v-for="p in productList" :key="p.id" :label="p.name + ' (库存:' + p.stock + ')'" :value="p.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="数量" prop="quantity">
-          <el-input-number v-model="stockForm.quantity" :min="1" style="width:100%" />
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="stockForm.remark" placeholder="备注信息" />
-        </el-form-item>
+    <div class="mt-5 text-right"><el-pagination v-model:current-page="search.page" v-model:page-size="search.limit" :total="total" :page-sizes="[10,20,50]" layout="total,sizes,prev,pager,next" @change="loadData" small /></div>
+    <el-dialog v-model="dialogVisible" :title="stockType==='in'?'入库':'出库'" width="450px">
+      <el-form :model="sForm" ref="sFormRef" label-width="90px">
+        <el-form-item label="选择商品"><el-select v-model="sForm.productId" placeholder="选择商品" filterable class="w-full"><el-option v-for="p in products" :key="p.id" :label="p.name+' (库存:'+p.stock+')'" :value="p.id" /></el-select></el-form-item>
+        <el-form-item label="数量"><el-input-number v-model="sForm.quantity" :min="1" class="w-full" /></el-form-item>
+        <el-form-item label="备注"><el-input v-model="sForm.remark" /></el-form-item>
       </el-form>
-      <div slot="footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitStock">确定</el-button>
-      </div>
+      <template #footer><el-button @click="dialogVisible=false">取消</el-button><el-button type="primary" @click="submitStock">确定</el-button></template>
     </el-dialog>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import { Plus, Minus } from '@element-plus/icons-vue'
 import { getStockList, stockIn, stockOut, getAllProducts } from '@/api'
 
-export default {
-  name: 'StockManage',
-  data() {
-    return {
-      searchForm: { page: 1, limit: 10 },
-      tableData: [], total: 0, loading: false,
-      productList: [], lowStockProducts: [],
-      dialogVisible: false, stockType: 'in',
-      stockForm: { productId: null, quantity: 1, remark: '' }
-    }
-  },
-  computed: { stockTitle() { return this.stockType === 'in' ? '入库' : '出库' } },
-  created() { this.loadData(); this.loadProducts() },
-  methods: {
-    async loadData() {
-      this.loading = true
-      try {
-        const res = await getStockList(this.searchForm)
-        this.tableData = res.data.list
-        this.total = res.data.total
-      } catch (e) { } finally { this.loading = false }
-    },
-    async loadProducts() {
-      try {
-        const res = await getAllProducts()
-        this.productList = res.data
-        this.lowStockProducts = res.data.filter(p => p.stock < 10)
-      } catch (e) { }
-    },
-    handleIn() {
-      this.stockType = 'in'
-      this.stockForm = { productId: null, quantity: 1, remark: '' }
-      this.dialogVisible = true
-    },
-    handleOut() {
-      this.stockType = 'out'
-      this.stockForm = { productId: null, quantity: 1, remark: '' }
-      this.dialogVisible = true
-    },
-    submitStock() {
-      if (!this.stockForm.productId) { this.$message.warning('请选择商品'); return }
-      const action = this.stockType === 'in' ? stockIn(this.stockForm) : stockOut(this.stockForm)
-      action.then(() => {
-        this.$message.success(this.stockType === 'in' ? '入库成功' : '出库成功')
-        this.dialogVisible = false; this.loadData(); this.loadProducts()
-      }).catch(() => { })
-    }
-  }
-}
+const tableData = ref([]); const total = ref(0); const loading = ref(false); const products = ref([]); const lowStock = ref([])
+const dialogVisible = ref(false); const stockType = ref('in')
+const search = reactive({ page: 1, limit: 10 })
+const sForm = reactive({ productId: null, quantity: 1, remark: '' }); const sFormRef = ref(null)
+
+onMounted(() => { loadData(); loadProducts() })
+async function loadData() { loading.value = true; try { const r = await getStockList(search); tableData.value = r.data.list; total.value = r.data.total } catch {} finally { loading.value = false } }
+async function loadProducts() { try { const r = await getAllProducts(); products.value = r.data; lowStock.value = r.data.filter(p => p.stock < 10) } catch {} }
+function handleIn() { stockType.value = 'in'; Object.assign(sForm, { productId: null, quantity: 1, remark: '' }); dialogVisible.value = true }
+function handleOut() { stockType.value = 'out'; Object.assign(sForm, { productId: null, quantity: 1, remark: '' }); dialogVisible.value = true }
+async function submitStock() { if (!sForm.productId) { ElMessage.warning('请选择商品'); return }; await (stockType.value === 'in' ? stockIn({ ...sForm }) : stockOut({ ...sForm })); ElMessage.success(stockType.value === 'in' ? '入库成功' : '出库成功'); dialogVisible.value = false; loadData(); loadProducts() }
 </script>

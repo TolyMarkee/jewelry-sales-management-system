@@ -1,7 +1,4 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-
-Vue.use(VueRouter)
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
   {
@@ -73,12 +70,11 @@ const routes = [
   }
 ]
 
-const router = new VueRouter({
-  mode: 'hash',
+const router = createRouter({
+  history: createWebHashHistory(),
   routes
 })
 
-// 路由守卫
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   const user = JSON.parse(localStorage.getItem('user') || 'null')
@@ -89,7 +85,6 @@ router.beforeEach((to, from, next) => {
     next('/')
   } else if (to.meta.requireAdmin && user && user.role !== 'admin') {
     next('/')
-    // 可选：提示无权限
   } else {
     next()
   }
