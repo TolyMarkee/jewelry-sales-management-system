@@ -44,11 +44,14 @@ function onLeave() {
   bottomBar.value.style.opacity = '0'
 }
 
+const isLight = () => document.documentElement.classList.contains('light')
+const spotColor = () => isLight() ? '#1e293b' : '#C7D1DB'
+
 function onMove(e) {
   const rect = e.currentTarget.getBoundingClientRect()
   const x = e.clientX - rect.left
-  const grad = `radial-gradient(50px circle at ${x}px 0px, #C7D1DB 0%, transparent 80%)`
-  topBar.value.style.background = grad
-  bottomBar.value.style.background = `radial-gradient(50px circle at ${x}px 2px, #C7D1DB 0%, transparent 80%)`
+  const c = spotColor()
+  topBar.value.style.background = `radial-gradient(50px circle at ${x}px 0px, ${c} 0%, transparent 80%)`
+  bottomBar.value.style.background = `radial-gradient(50px circle at ${x}px 2px, ${c} 0%, transparent 80%)`
 }
 </script>
