@@ -7,7 +7,10 @@
       </button>
     </div>
 
-    <input v-model="search.keyword" placeholder="搜索姓名/电话..." class="h-9 px-3 rounded-lg text-sm outline-none w-56" style="background:#101214; border:1px solid #2C333A; color:#DEE4EA" @keyup.enter="loadData" />
+    <div class="flex items-center gap-3">
+      <SuggestiveInput v-model="search.keyword" :hints="['搜索客户姓名...','按电话查找...','输入关键词搜索...']" @search="loadData" class="w-56" />
+      <span class="text-xs" style="color:#596773">共 {{ total }} 条</span>
+    </div>
 
     <div class="space-y-2">
       <div v-for="c in tableData" :key="c.id" class="group flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:translate-x-1" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.04)">
@@ -43,6 +46,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getCustomerList, saveCustomer, updateCustomer, deleteCustomer } from '@/api'
+import SuggestiveInput from '@/components/SuggestiveInput.vue'
 
 const tableData = ref([]); const total = ref(0); const dialogVisible = ref(false); const dialogTitle = ref('新增客户')
 const search = reactive({ keyword:'', page:1, limit:10 })
