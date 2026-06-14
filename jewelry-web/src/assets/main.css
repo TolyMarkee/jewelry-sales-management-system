@@ -4,8 +4,85 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body, #app { height: 100%; }
-body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; }
+body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #101214; color: #DEE4EA; }
 
-.container-page { padding: 20px; }
-.search-bar { @apply mb-5 p-5 bg-white rounded; }
-.toolbar { @apply mb-5; }
+/* ===== Element Plus Dark Overrides ===== */
+:root {
+  --el-bg-color: #101214;
+  --el-bg-color-overlay: #161A1D;
+  --el-border-color: #2C333A;
+  --el-border-color-light: #2C333A;
+  --el-text-color-primary: #DEE4EA;
+  --el-text-color-regular: #94a3b8;
+  --el-text-color-disabled: #596773;
+  --el-fill-color: #1D2125;
+  --el-fill-color-light: #1D2125;
+  --el-fill-color-blank: #101214;
+  --el-color-primary: #a855f7;
+  --el-color-primary-light-3: #7c3aed;
+  --el-color-primary-light-5: #6366f1;
+  --el-color-primary-light-7: #8b5cf6;
+  --el-color-primary-light-9: #c4b5fd;
+}
+
+/* Dialog */
+.el-dialog { --el-dialog-bg-color: #161A1D; border-radius: 16px !important; border: 1px solid rgba(255,255,255,0.06) !important; }
+.el-dialog__header { border-bottom: 1px solid rgba(255,255,255,0.04); padding: 16px 20px !important; }
+.el-dialog__title { color: #DEE4EA !important; font-weight: 600 !important; }
+.el-dialog__body { color: #94a3b8; }
+.el-dialog__headerbtn .el-dialog__close { color: #596773 !important; }
+
+/* Input / Select / InputNumber */
+.el-input__wrapper, .el-input-number .el-input__wrapper {
+  background: #101214 !important; border: 1px solid #2C333A !important; border-radius: 10px !important;
+  box-shadow: none !important; color: #DEE4EA !important;
+}
+.el-input__inner, .el-input-number__input {
+  background: transparent !important; color: #DEE4EA !important;
+}
+.el-input__inner::placeholder { color: #596773 !important; }
+.el-select-dropdown { background: #161A1D !important; border: 1px solid #2C333A !important; }
+.el-select-dropdown__item { color: #94a3b8 !important; }
+.el-select-dropdown__item.hover, .el-select-dropdown__item:hover { background: rgba(168,85,247,0.1) !important; color: #c4b5fd !important; }
+.el-select-dropdown__item.selected { color: #a855f7 !important; font-weight: 600 !important; }
+.el-select .el-input__wrapper { background: #101214 !important; }
+
+/* Pagination */
+.el-pagination { --el-pagination-bg-color: transparent; }
+.el-pagination button, .el-pagination .el-pager li {
+  background: rgba(22,26,29,0.5) !important; color: #94a3b8 !important;
+  border: 1px solid rgba(255,255,255,0.04) !important; border-radius: 8px !important;
+  min-width: 32px !important; height: 32px !important; line-height: 32px !important;
+}
+.el-pagination button:hover, .el-pagination .el-pager li:hover { color: #c4b5fd !important; border-color: rgba(168,85,247,0.3) !important; }
+.el-pagination .el-pager li.is-active { background: rgba(168,85,247,0.2) !important; color: #c4b5fd !important; border-color: rgba(168,85,247,0.3) !important; }
+.el-pagination .el-pagination__total, .el-pagination .el-pagination__sizes { color: #596773 !important; }
+.el-pagination .el-select .el-input__wrapper { background: rgba(22,26,29,0.5) !important; }
+
+/* Table (for any remaining el-table usage) */
+.el-table { --el-table-bg-color: transparent; --el-table-tr-bg-color: transparent; --el-table-header-bg-color: rgba(22,26,29,0.5); }
+.el-table th.el-table__cell { background: rgba(22,26,29,0.5) !important; color: #94a3b8 !important; border-color: rgba(255,255,255,0.04) !important; }
+.el-table td.el-table__cell { border-color: rgba(255,255,255,0.04) !important; color: #DEE4EA !important; }
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell { background: rgba(255,255,255,0.02) !important; }
+
+/* Button plain */
+.el-button.is-plain { --el-button-bg-color: transparent; --el-button-border-color: #2C333A; --el-button-text-color: #94a3b8; }
+.el-button--primary { --el-button-bg-color: #a855f7; --el-button-border-color: #a855f7; }
+
+/* Message box */
+.el-message-box { background: #161A1D !important; border: 1px solid rgba(255,255,255,0.06) !important; }
+.el-message-box__title { color: #DEE4EA !important; }
+.el-message-box__message { color: #94a3b8 !important; }
+
+/* Form labels */
+.el-form-item__label { color: #94a3b8 !important; }
+.el-form-item__error { color: #ef4444 !important; }
+
+/* Popper / Dropdown */
+.el-popper { background: #161A1D !important; border: 1px solid #2C333A !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2C333A; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #596773; }
