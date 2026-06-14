@@ -6,7 +6,7 @@
     <div class="rounded-2xl p-6 flex items-center gap-6" style="background:var(--surface); border:1px solid var(--border)">
       <div class="relative">
         <div class="w-20 h-20 rounded-full p-[3px]" style="background:linear-gradient(135deg,#a855f7,#6366f1,#a855f7)" />
-        <el-upload action="/api/upload/avatar" :headers="uploadHeaders" :show-file-list="false" :on-success="onAvatarSuccess" :before-upload="onAvatarBefore" class="absolute inset-0 flex items-center justify-center">
+        <el-upload ref="uploadRef" action="/api/upload/avatar" :headers="uploadHeaders" :show-file-list="false" :on-success="onAvatarSuccess" :before-upload="onAvatarBefore" class="absolute inset-0 flex items-center justify-center">
           <img v-if="form.avatar" :src="'/images/'+form.avatar" class="w-20 h-20 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity" />
           <div v-else class="w-20 h-20 rounded-full flex items-center justify-center cursor-pointer text-2xl font-bold text-white" style="background:var(--bg)">{{ (form.realName||form.username||'?')[0] }}</div>
         </el-upload>
@@ -14,7 +14,7 @@
       <div>
         <div class="text-lg font-bold" style="color:var(--text-primary)">{{ form.realName || form.username }}</div>
         <div class="text-xs mt-1" style="color:var(--text-muted)">{{ form.role==='admin'?'管理员':'销售员' }} · {{ form.email || '未设置邮箱' }}</div>
-        <span class="block mt-2 text-[10px]" style="color:var(--text-muted)">点击左侧圆圈更换头像</span>
+        <button @click="triggerUpload" class="mt-2 px-3 py-1 rounded-lg text-xs font-medium transition-all hover:scale-105" style="background:rgba(168,85,247,0.15); color:var(--accent)">更换图片</button>
       </div>
     </div>
 
@@ -73,6 +73,7 @@ import { useUserStore } from '@/stores/user'
 import { getProfile, updateProfile, changePassword } from '@/api'
 
 const router = useRouter(); const userStore = useUserStore()
+const uploadRef = ref(null)
 const form = reactive({ id:null,username:'',realName:'',phone:'',email:'',avatar:'',role:'',createTime:'' })
 const pwd = reactive({ oldPassword:'',newPassword:'',confirmPassword:'' })
 const saving = ref(false); const pwdLoading = ref(false)
@@ -83,4 +84,5 @@ async function saveProfile(){saving.value=true;try{const r=await updateProfile({
 async function changePwd(){if(!pwd.oldPassword||!pwd.newPassword){ElMessage.warning('请填写完整');return};if(pwd.newPassword!==pwd.confirmPassword){ElMessage.warning('两次密码不一致');return};pwdLoading.value=true;try{await changePassword({oldPassword:pwd.oldPassword,newPassword:pwd.newPassword});ElMessage.success('密码已修改，即将重新登录');Object.assign(pwd,{oldPassword:'',newPassword:'',confirmPassword:''});setTimeout(()=>{userStore.logout();router.push('/login')},1500)}catch{}finally{pwdLoading.value=false}}
 function onAvatarSuccess(res){if(res.code===0){form.avatar=res.data;saveProfile()}else ElMessage.error('上传失败')}
 function onAvatarBefore(f){const ok=f.type.startsWith('image/')&&f.size/1024/1024<5;if(!ok)ElMessage.error('仅图片且<5MB');return ok}
+function triggerUpload(){const el=uploadRef.value?.$el?.querySelector('input[type=file]');if(el)el.click()}
 </script>
