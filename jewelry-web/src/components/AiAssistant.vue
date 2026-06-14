@@ -4,7 +4,7 @@
       <el-icon :size="24"><Service /></el-icon>
     </div>
 
-    <div v-if="visible" class="w-[380px] h-[520px] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
+    <div v-if="visible" class="w-[380px] h-[520px] rounded-xl shadow-2xl flex flex-col overflow-hidden" style="background:var(--surface-solid); border:1px solid var(--border)">
       <div class="h-12 bg-gradient-to-r from-indigo-500 to-purple-600 text-white flex items-center justify-between px-3 text-sm flex-shrink-0">
         <span><el-icon><Cpu /></el-icon> AI 助手</span>
         <div>
@@ -12,20 +12,20 @@
         </div>
       </div>
 
-      <div ref="chatBody" class="flex-1 overflow-y-auto p-3 bg-gray-50 space-y-3">
+      <div ref="chatBody" class="flex-1 overflow-y-auto p-3 space-y-3" style="background:var(--bg)">
         <div v-for="(msg, i) in messages" :key="i" :class="['flex', msg.role === 'user' ? 'flex-row-reverse' : '']">
           <div :class="msg.role === 'user' ? 'bg-blue-50 text-blue-500 ml-2' : 'bg-gray-100 text-gray-500 mr-2'" class="w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0">
             <el-icon :size="14"><User v-if="msg.role === 'user'" /><Cpu v-else /></el-icon>
           </div>
-          <div :class="msg.role === 'user' ? 'bg-blue-500 text-white rounded-tr-none' : 'bg-white text-gray-700 rounded-tl-none shadow-sm'" class="max-w-[260px] px-3 py-2 rounded-xl text-sm leading-relaxed break-words" v-html="formatMsg(msg.content)" />
+          <div :class="msg.role === 'user' ? 'bg-blue-500 text-white rounded-tr-none' : 'rounded-tl-none shadow-sm'" :style="msg.role === 'assistant' ? {background:'var(--surface-solid)', color:'var(--text-primary)'} : {}" class="max-w-[260px] px-3 py-2 rounded-xl text-sm leading-relaxed break-words" v-html="formatMsg(msg.content)" />
         </div>
         <div v-if="loading" class="flex">
           <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-2 flex-shrink-0"><el-icon :size="14"><Cpu /></el-icon></div>
-          <div class="bg-white px-4 py-2 rounded-xl rounded-tl-none shadow-sm"><span class="dot-typing" /></div>
+          <div class="px-4 py-2 rounded-xl rounded-tl-none shadow-sm" style="background:var(--surface-solid)"><span class="dot-typing" /></div>
         </div>
       </div>
 
-      <div class="p-3 border-t flex-shrink-0">
+      <div class="p-3 border-t flex-shrink-0" style="border-color:var(--border)">
         <el-input v-model="input" placeholder="输入问题..." size="small" @keyup.enter="send">
           <template #append><el-button :disabled="!input.trim() || loading" @click="send"><el-icon><Promotion /></el-icon></el-button></template>
         </el-input>
