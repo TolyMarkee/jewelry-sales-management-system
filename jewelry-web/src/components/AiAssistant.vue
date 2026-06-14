@@ -25,23 +25,37 @@
           <div class="flex items-center justify-between px-5 pt-4 pb-2">
             <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span class="text-xs font-medium" style="color:var(--text-muted)">AI Assistant</span>
+              <span class="text-xs font-medium" style="color:var(--text-muted)">珠宝AI助手</span>
             </div>
             <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 text-[10px] font-medium rounded-2xl" style="background:rgba(168,85,247,0.15); color:#c4b5fd">GPT-4</span>
-              <span class="px-2 py-0.5 text-[10px] font-medium rounded-2xl" style="background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2)">Pro</span>
+              <span class="px-2 py-0.5 text-[10px] font-medium rounded-2xl" style="background:rgba(168,85,247,0.15); color:#c4b5fd">DeepSeek Chat</span>
               <button @click="visible = false" class="p-1 rounded-full transition-colors" style="color:var(--text-muted)" @mouseenter="(e) => e.target.style.background='rgba(255,255,255,0.05)'" @mouseleave="(e) => e.target.style.background='transparent'">✕</button>
             </div>
+          </div>
+
+          <!-- Welcome & Messages -->
+          <div class="px-5 pb-2 space-y-2 max-h-[120px] overflow-y-auto">
+            <div class="text-xs leading-relaxed" style="color:var(--text-muted)">
+              您好！我是珠宝销售管理系统的AI助手，有什么可以帮您的？
+            </div>
+          </div>
+
+          <!-- Quick prompts -->
+          <div class="px-5 pb-2 flex flex-wrap gap-1.5">
+            <button v-for="q in quickQs" :key="q" @click="sendQuick(q)"
+              class="px-2.5 py-1 text-[11px] rounded-lg transition-all hover:scale-105"
+              style="background:rgba(168,85,247,0.08); color:#c4b5fd; border:1px solid rgba(168,85,247,0.12)"
+            >{{ q }}</button>
           </div>
 
           <!-- Input area -->
           <textarea
             v-model="input"
             @keydown="onKeydown"
-            rows="4"
-            class="w-full px-5 py-3 bg-transparent border-none outline-none resize-none text-base leading-relaxed min-h-[100px]"
+            rows="2"
+            class="w-full px-5 py-2 bg-transparent border-none outline-none resize-none text-sm leading-relaxed"
             style="color:var(--text-primary); caret-color:var(--text-primary)"
-            :placeholder="'想问什么？分享想法、寻求建议...'"
+            placeholder="输入问题..."
           />
 
           <!-- Controls -->
@@ -96,6 +110,7 @@ const visible = ref(false)
 const input = ref('')
 const loading = ref(false)
 const chatRef = ref(null)
+const quickQs = ['今日销售如何？', '库存预警？', '如何创建订单？']
 const hovering = ref(false)
 
 const toolBtns = [
@@ -111,6 +126,7 @@ const btnStyle = {
   border: '2px solid rgba(255,255,255,0.2)'
 }
 
+function sendQuick(text) { input.value = text; send() }
 function onKeydown(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault()
