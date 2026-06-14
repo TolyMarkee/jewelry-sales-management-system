@@ -28,10 +28,9 @@ jwt:
   secret: jewelry-secret-key-2024-jewelry-sales-management-system
   expire: 86400000  # 24小时
 
-# AI大模型配置（可选，不配置则使用内置回复）
-# 支持 OpenAI / DeepSeek / 通义千问 等兼容接口
+# AI大模型配置
 ai:
   api:
-    url:                          # 如: https://api.openai.com/v1/chat/completions
-    key:                          # 你的 API Key
-    model: gpt-3.5-turbo          # 模型名称
+    url: https://api.deepseek.com/v1/chat/completions
+    key: sk-81cac889fe2a4f2abbd8a82b736d2336
+    model: deepseek-chat
