@@ -1,9 +1,9 @@
 <template>
-  <div class="flex h-screen" style="background:#101214">
+  <div class="flex h-screen" style="background:var(--bg)">
     <!-- Glass sidebar -->
-    <aside class="w-60 flex-shrink-0 flex flex-col border-r border-white/[0.06]" style="background:rgba(22,26,29,0.7); backdrop-filter:blur(24px)">
+    <aside class="w-60 flex-shrink-0 flex flex-col border-r" style="background:var(--surface); backdrop-filter:blur(24px); border-color:var(--border)">
       <!-- Logo -->
-      <div class="h-14 flex items-center gap-3 px-5 border-b border-white/[0.04]">
+      <div class="h-14 flex items-center gap-3 px-5 border-b" style="border-color:var(--border)">
         <div class="relative">
           <div class="absolute -inset-1 rounded-lg blur opacity-60" style="background:linear-gradient(135deg,#a855f7,#6366f1)" />
           <div class="relative w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#a855f7,#6366f1)">
@@ -40,8 +40,12 @@
         </button>
       </nav>
 
-      <!-- User footer -->
-      <div class="px-3 py-3 border-t border-white/[0.04]">
+      <!-- Theme + User footer -->
+      <div class="px-3 py-3 border-t space-y-2" style="border-color:var(--border)">
+        <div class="flex items-center justify-between px-3">
+          <span class="text-[10px] font-medium" style="color:var(--text-muted)">主题切换</span>
+          <ThemeToggle />
+        </div>
         <div class="flex items-center gap-3 px-3 py-2">
           <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:linear-gradient(135deg,#a855f7,#6366f1)">
             {{ (userStore.user?.realName || userStore.user?.username || '?')[0] }}
@@ -59,13 +63,13 @@
 
     <!-- Main content -->
     <div class="flex-1 flex flex-col overflow-hidden">
-      <header class="h-12 flex items-center justify-end px-6 border-b border-white/[0.04] flex-shrink-0" style="background:rgba(22,26,29,0.3); backdrop-filter:blur(16px)">
+      <header class="h-12 flex items-center justify-end px-6 border-b flex-shrink-0" style="background:var(--surface); backdrop-filter:blur(16px); border-color:var(--border)">
         <div class="flex items-center gap-3 text-xs" style="color:#596773">
           <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
           系统运行中
         </div>
       </header>
-      <main class="flex-1 overflow-y-auto p-5" style="background:#101214">
+      <main class="flex-1 overflow-y-auto p-5" style="background:var(--bg)">
         <router-view />
       </main>
     </div>
@@ -80,6 +84,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessageBox } from 'element-plus'
 import AiAssistant from '@/components/AiAssistant.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 import { HomeFilled, Goods, Menu, Tickets, User, Box, TrendCharts, UserFilled, Setting } from '@element-plus/icons-vue'
 
 const route = useRoute()
