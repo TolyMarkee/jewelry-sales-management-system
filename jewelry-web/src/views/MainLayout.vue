@@ -11,7 +11,7 @@
           </div>
         </div>
         <div>
-          <div class="text-sm font-bold tracking-wide" style="color:#DEE4EA">LUXE GEM</div>
+          <div class="text-sm font-bold tracking-wide" style="color:var(--text-primary)">LUXE GEM</div>
           <div class="text-[10px] -mt-0.5 font-medium tracking-wider" style="background:linear-gradient(135deg,#a855f7,#6366f1); -webkit-background-clip:text; -webkit-text-fill-color:transparent">MANAGEMENT</div>
         </div>
       </div>
@@ -51,8 +51,8 @@
             {{ (userStore.user?.realName || userStore.user?.username || '?')[0] }}
           </div>
           <div class="flex-1 min-w-0">
-            <div class="text-xs font-medium truncate" style="color:#DEE4EA">{{ userStore.user?.realName }}</div>
-            <div class="text-[10px] truncate" style="color:#596773">{{ userStore.user?.username }}</div>
+            <div class="text-xs font-medium truncate" style="color:var(--text-primary)">{{ userStore.user?.realName }}</div>
+            <div class="text-[10px] truncate" style="color:var(--text-muted)">{{ userStore.user?.username }}</div>
           </div>
           <button @click="handleLogout" class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-all" title="退出登录">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
