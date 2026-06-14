@@ -46,8 +46,8 @@ body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei
   --border-strong: #cbd5e1;
   --input-bg: #ffffff;
   --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #475569;
+  --text-secondary: #1e293b;
+  --text-muted: #334155;
   --accent: #4f46e5;
   --accent-gradient: linear-gradient(135deg,#4f46e5,#7c3aed);
   --success: #059669;
@@ -61,8 +61,8 @@ body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei
   --el-border-color: #cbd5e1;
   --el-border-color-light: #e2e8f0;
   --el-text-color-primary: #0f172a;
-  --el-text-color-regular: #334155;
-  --el-text-color-disabled: #475569;
+  --el-text-color-regular: #1e293b;
+  --el-text-color-disabled: #334155;
   --el-fill-color: #f1f5f9;
   --el-fill-color-light: #f1f5f9;
   --el-fill-color-blank: #ffffff;
