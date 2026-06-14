@@ -39,34 +39,34 @@ body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei
 }
 
 .light {
-  --bg: #f8fafc;
-  --surface: rgba(255,255,255,0.8);
+  --bg: #eef1f5;
+  --surface: #ffffff;
   --surface-solid: #ffffff;
-  --border: rgba(0,0,0,0.06);
-  --border-strong: #e2e8f0;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: #cbd5e1;
   --input-bg: #ffffff;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
-  --accent: #6366f1;
-  --accent-gradient: linear-gradient(135deg,#6366f1,#8b5cf6);
-  --success: #10b981;
-  --warning: #d97706;
-  --danger: #ef4444;
-  --info: #3b82f6;
-  --hover-bg: rgba(0,0,0,0.03);
-  --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --accent: #4f46e5;
+  --accent-gradient: linear-gradient(135deg,#4f46e5,#7c3aed);
+  --success: #059669;
+  --warning: #b45309;
+  --danger: #dc2626;
+  --info: #2563eb;
+  --hover-bg: rgba(0,0,0,0.04);
+  --card-shadow: 0 4px 12px rgba(0,0,0,0.06);
   --el-bg-color: #ffffff;
   --el-bg-color-overlay: #ffffff;
-  --el-border-color: #e2e8f0;
+  --el-border-color: #cbd5e1;
   --el-border-color-light: #e2e8f0;
-  --el-text-color-primary: #1e293b;
-  --el-text-color-regular: #64748b;
-  --el-text-color-disabled: #94a3b8;
-  --el-fill-color: #f8fafc;
-  --el-fill-color-light: #f8fafc;
+  --el-text-color-primary: #0f172a;
+  --el-text-color-regular: #475569;
+  --el-text-color-disabled: #64748b;
+  --el-fill-color: #f1f5f9;
+  --el-fill-color-light: #f1f5f9;
   --el-fill-color-blank: #ffffff;
-  --el-color-primary: #6366f1;
+  --el-color-primary: #4f46e5;
 }
 
 body { background: var(--bg); color: var(--text-primary); }
