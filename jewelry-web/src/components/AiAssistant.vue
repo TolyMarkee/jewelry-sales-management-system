@@ -33,10 +33,26 @@
             </div>
           </div>
 
-          <!-- Welcome & Messages -->
-          <div class="px-5 pb-2 space-y-2 max-h-[120px] overflow-y-auto">
-            <div class="text-xs leading-relaxed" style="color:var(--text-muted)">
+          <!-- Messages -->
+          <div ref="chatBody" class="px-5 pb-2 space-y-2 max-h-[200px] overflow-y-auto">
+            <!-- Welcome -->
+            <div v-if="messages.length===0" class="text-xs leading-relaxed" style="color:var(--text-muted)">
               您好！我是珠宝销售管理系统的AI助手，有什么可以帮您的？
+            </div>
+            <!-- Chat messages -->
+            <div v-for="(msg, i) in messages" :key="i" :class="['flex', msg.role==='user'?'justify-end':'justify-start']">
+              <div :class="msg.role==='user'
+                ? 'max-w-[80%] px-3 py-1.5 rounded-2xl rounded-br-md text-xs text-white'
+                : 'max-w-[80%] px-3 py-1.5 rounded-2xl rounded-bl-md text-xs'"
+                :style="msg.role==='user'
+                  ? {background:'linear-gradient(135deg,#6366f1,#a855f7)'}
+                  : {background:'var(--bg)', color:'var(--text-primary)'}"
+              >{{ msg.content }}</div>
+            </div>
+            <div v-if="loading" class="flex justify-start">
+              <div class="px-3 py-1.5 rounded-2xl rounded-bl-md text-xs flex items-center gap-1" style="background:var(--bg); color:var(--text-muted)">
+                <span class="dot-typing" />
+              </div>
             </div>
           </div>
 
@@ -110,6 +126,7 @@ const visible = ref(false)
 const input = ref('')
 const loading = ref(false)
 const chatRef = ref(null)
+const chatBody = ref(null)
 const quickQs = ['今日销售如何？', '库存预警？', '如何创建订单？']
 const hovering = ref(false)
 
@@ -134,15 +151,26 @@ function onKeydown(e) {
   }
 }
 
+const messages = ref([])
+
 async function send() {
   const msg = input.value.trim()
   if (!msg || loading.value) return
-  loading.value = true
+  messages.value.push({ role: 'user', content: msg })
   input.value = ''
+  loading.value = true
+  await nextTick()
+  if (chatBody.value) chatBody.value.scrollTop = chatBody.value.scrollHeight
   try {
-    await request.post('/ai/chat', { message: msg })
-  } catch {}
-  loading.value = false
+    const res = await request.post('/ai/chat', { message: msg })
+    messages.value.push({ role: 'assistant', content: res.data.reply || '抱歉，无法回答' })
+  } catch {
+    messages.value.push({ role: 'assistant', content: '网络异常，请稍后重试' })
+  } finally {
+    loading.value = false
+    await nextTick()
+    if (chatBody.value) chatBody.value.scrollTop = chatBody.value.scrollHeight
+  }
 }
 
 // Click outside to close
@@ -164,4 +192,10 @@ onUnmounted(() => document.removeEventListener('mousedown', onClickOutside))
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 .floating-ai-btn:hover { transform: scale(1.1) rotate(5deg); }
+.dot-typing { display: inline-flex; gap: 3px; padding: 2px 0; }
+.dot-typing::before, .dot-typing::after, .dot-typing { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #94a3b8; animation: blink 1.4s infinite both; display: inline-block; }
+.dot-typing::before { animation-delay: 0s; }
+.dot-typing { animation-delay: .2s; }
+.dot-typing::after { animation-delay: .4s; }
+@keyframes blink { 0%,80%,100% { opacity: 0 } 40% { opacity: 1 } }
 </style>
