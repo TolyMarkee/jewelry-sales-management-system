@@ -1,40 +1,98 @@
 <template>
-  <el-container class="h-full">
-    <el-aside width="220px" class="bg-slate-800 overflow-y-auto">
-      <div class="h-16 flex items-center justify-center text-white text-base border-b border-white/10">💎 珠宝销售管理</div>
-      <el-menu :default-active="route.path" router background-color="#1e293b" text-color="#94a3b8" active-text-color="#60a5fa">
-        <el-menu-item index="/dashboard"><el-icon><HomeFilled /></el-icon><span>仪表盘</span></el-menu-item>
-        <el-menu-item index="/product"><el-icon><Goods /></el-icon><span>商品管理</span></el-menu-item>
-        <el-menu-item index="/category"><el-icon><Menu /></el-icon><span>分类管理</span></el-menu-item>
-        <el-menu-item index="/order"><el-icon><Tickets /></el-icon><span>订单管理</span></el-menu-item>
-        <el-menu-item index="/customer"><el-icon><User /></el-icon><span>客户管理</span></el-menu-item>
-        <el-menu-item index="/stock"><el-icon><Box /></el-icon><span>库存管理</span></el-menu-item>
-        <el-menu-item index="/statistics"><el-icon><TrendCharts /></el-icon><span>销售统计</span></el-menu-item>
-        <el-menu-item index="/profile"><el-icon><UserFilled /></el-icon><span>个人中心</span></el-menu-item>
-        <el-menu-item v-if="userStore.isAdmin" index="/user"><el-icon><Setting /></el-icon><span>用户管理</span></el-menu-item>
-      </el-menu>
-    </el-aside>
-    <el-container>
-      <el-header class="bg-white border-b border-gray-200 flex items-center justify-end h-[50px] px-5">
-        <span class="text-gray-600 mr-5">{{ userStore.user?.realName || userStore.user?.username }}</span>
-        <el-button type="danger" text @click="handleLogout">退出登录</el-button>
-      </el-header>
-      <el-main class="bg-gray-100 h-[calc(100vh-50px)] overflow-y-auto"><router-view /></el-main>
-    </el-container>
+  <div class="flex h-screen" style="background:#101214">
+    <!-- Glass sidebar -->
+    <aside class="w-60 flex-shrink-0 flex flex-col border-r border-white/[0.06]" style="background:rgba(22,26,29,0.7); backdrop-filter:blur(24px)">
+      <!-- Logo -->
+      <div class="h-14 flex items-center gap-2 px-5 border-b border-white/[0.04]">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold" style="background:linear-gradient(135deg,#a855f7,#6366f1)">J</div>
+        <span class="text-sm font-semibold" style="color:#DEE4EA">Jewelry MS</span>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <button
+          v-for="item in menuItems"
+          :key="item.path"
+          @click="router.push(item.path)"
+          class="group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300"
+          :class="isActive(item.path) ? 'text-white' : 'text-gray-400 hover:text-gray-200'"
+        >
+          <!-- Active glow background -->
+          <div
+            v-if="isActive(item.path)"
+            class="absolute inset-0 rounded-xl opacity-40"
+            style="background:linear-gradient(135deg,rgba(168,85,247,0.3),rgba(99,102,241,0.2))"
+          />
+          <!-- Hover background -->
+          <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity bg-white/[0.04]" />
+          <!-- Icon -->
+          <component :is="item.icon" class="w-5 h-5 relative z-10 flex-shrink-0" />
+          <!-- Label -->
+          <span class="relative z-10 truncate">{{ item.label }}</span>
+        </button>
+      </nav>
+
+      <!-- User footer -->
+      <div class="px-3 py-3 border-t border-white/[0.04]">
+        <div class="flex items-center gap-3 px-3 py-2">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:linear-gradient(135deg,#a855f7,#6366f1)">
+            {{ (userStore.user?.realName || userStore.user?.username || '?')[0] }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-xs font-medium truncate" style="color:#DEE4EA">{{ userStore.user?.realName }}</div>
+            <div class="text-[10px] truncate" style="color:#596773">{{ userStore.user?.username }}</div>
+          </div>
+          <button @click="handleLogout" class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-all" title="退出登录">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <header class="h-12 flex items-center justify-end px-6 border-b border-white/[0.04] flex-shrink-0" style="background:rgba(22,26,29,0.3); backdrop-filter:blur(16px)">
+        <div class="flex items-center gap-3 text-xs" style="color:#596773">
+          <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+          系统运行中
+        </div>
+      </header>
+      <main class="flex-1 overflow-y-auto p-5" style="background:#101214">
+        <router-view />
+      </main>
+    </div>
+
     <AiAssistant />
-  </el-container>
+  </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { HomeFilled, Goods, Menu, Tickets, User, Box, TrendCharts, UserFilled, Setting } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import AiAssistant from '@/components/AiAssistant.vue'
+import { HomeFilled, Goods, Menu, Tickets, User, Box, TrendCharts, UserFilled, Setting } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+
+const menuItems = [
+  { path: '/dashboard', label: '仪表盘', icon: HomeFilled },
+  { path: '/product', label: '商品管理', icon: Goods },
+  { path: '/category', label: '分类管理', icon: Menu },
+  { path: '/order', label: '订单管理', icon: Tickets },
+  { path: '/customer', label: '客户管理', icon: User },
+  { path: '/stock', label: '库存管理', icon: Box },
+  { path: '/statistics', label: '销售统计', icon: TrendCharts },
+  { path: '/profile', label: '个人中心', icon: UserFilled },
+  { path: '/user', label: '用户管理', icon: Setting, admin: true }
+]
+
+const visibleItems = computed(() => menuItems.filter(i => !i.admin || userStore.isAdmin))
+
+function isActive(path) { return route.path === path }
 
 function handleLogout() {
   ElMessageBox.confirm('确定要退出登录吗？', '提示', { type: 'warning' }).then(() => {

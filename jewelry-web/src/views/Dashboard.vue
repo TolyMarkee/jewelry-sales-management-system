@@ -1,41 +1,58 @@
 <template>
-  <div class="p-5 space-y-5">
-    <!-- Top Row -->
-    <div class="flex gap-5">
-      <div class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-6 text-white">
-        <h2 class="text-xl font-bold">欢迎回来，{{ userStore.user?.realName || userStore.user?.username }}</h2>
-        <p class="text-white/80 text-sm mt-1">{{ today }} | {{ greeting }}</p>
+  <div class="space-y-6">
+    <!-- Welcome + Weather -->
+    <div class="flex gap-4">
+      <div class="flex-1 rounded-2xl p-6 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(99,102,241,0.1)); border:1px solid rgba(168,85,247,0.15)">
+        <div class="relative z-10">
+          <h2 class="text-xl font-bold" style="color:#DEE4EA">欢迎回来，{{ userStore.user?.realName || userStore.user?.username }}</h2>
+          <p class="text-sm mt-1" style="color:#596773">{{ today }} · {{ greeting }}</p>
+        </div>
+        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-6xl opacity-10" style="color:#a855f7">✦</div>
       </div>
-      <div class="w-64 bg-white rounded-xl p-4 flex items-center gap-3">
+      <div class="w-60 rounded-2xl p-5 flex items-center gap-4" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)">
         <span class="text-3xl">{{ weatherIcon }}</span>
         <div>
-          <div class="text-sm text-gray-500">{{ weather.city || '加载中...' }}</div>
-          <div class="text-2xl font-bold">{{ weather.temp || '--' }}°C</div>
-          <div class="text-xs text-gray-400">{{ weather.desc || '' }}</div>
+          <div class="text-xs" style="color:#596773">{{ weather.city || '获取天气...' }}</div>
+          <div class="text-2xl font-bold" style="color:#DEE4EA">{{ weather.temp || '--' }}°</div>
         </div>
       </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-4 gap-5">
-      <div v-for="s in statsCards" :key="s.label" class="bg-white rounded-xl p-5 flex items-center gap-4 cursor-pointer hover:-translate-y-0.5 transition-shadow hover:shadow-lg" @click="router.push(s.link)">
-        <div class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl" :style="{ background: s.bg, color: s.color }"><el-icon :size="26"><component :is="s.icon" /></el-icon></div>
-        <div><div class="text-2xl font-bold">{{ s.value }}</div><div class="text-gray-400 text-sm">{{ s.label }}</div></div>
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-4 gap-4">
+      <div v-for="s in statCards" :key="s.label"
+        class="group rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg relative overflow-hidden"
+        style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)"
+        @click="s.link && router.push(s.link)"
+      >
+        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" :style="{background:`radial-gradient(circle at top right, ${s.glow}33, transparent 60%)`}" />
+        <div class="flex items-start justify-between relative z-10">
+          <div>
+            <div class="text-xs mb-1" style="color:#596773">{{ s.label }}</div>
+            <div class="text-3xl font-bold" style="color:#DEE4EA">{{ s.value }}</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" :style="{background:`${s.color}18`, color:s.color}">
+            <component :is="s.icon" class="w-5 h-5" />
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Charts + Stock -->
-    <div class="flex gap-5">
-      <div class="flex-[2] bg-white rounded-xl p-5"><div class="font-semibold mb-3">近14天销售额趋势</div><div ref="barChart" style="height:280px" /></div>
-      <div class="flex-1 bg-white rounded-xl p-5">
-        <div class="font-semibold mb-3">库存预警</div>
-        <div v-if="lowStock.length === 0" class="text-center py-10 text-green-500"><el-icon :size="40"><SuccessFilled /></el-icon><p class="mt-2">库存充足</p></div>
-        <el-table v-else :data="lowStock" size="small" max-height="270">
-          <el-table-column prop="name" label="商品" />
-          <el-table-column prop="stock" label="库存" width="60">
-            <template #default="s"><el-tag :type="s.row.stock === 0 ? 'danger' : 'warning'" size="small">{{ s.row.stock }}</el-tag></template>
-          </el-table-column>
-        </el-table>
+    <div class="flex gap-4">
+      <div class="flex-[2] rounded-2xl p-5" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)">
+        <div class="text-sm font-semibold mb-4" style="color:#DEE4EA">近14天销售额趋势</div>
+        <div ref="barChart" style="height:260px" />
+      </div>
+      <div class="flex-1 rounded-2xl p-5" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.06)">
+        <div class="text-sm font-semibold mb-3" style="color:#DEE4EA">库存预警</div>
+        <div v-if="lowStock.length===0" class="text-center py-8"><div class="text-4xl mb-2">✅</div><div class="text-xs" style="color:#596773">库存充足，无需补货</div></div>
+        <div v-else class="space-y-2">
+          <div v-for="p in lowStock" :key="p.id" class="flex items-center justify-between py-2 border-b border-white/[0.04]">
+            <span class="text-sm truncate" style="color:#DEE4EA">{{ p.name }}</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" :style="{background:p.stock===0?'rgba(239,68,68,0.2)':'rgba(250,204,21,0.2)', color:p.stock===0?'#ef4444':'#facc15'}">{{ p.stock }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -46,81 +63,53 @@ import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { getOrderList, getAllProducts, getAllCustomers } from '@/api'
-import { Goods, Tickets, User, Coin, SuccessFilled } from '@element-plus/icons-vue'
+import { Goods, Tickets, User, Coin } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
 
 const router = useRouter()
 const userStore = useUserStore()
+const barChart = ref(null)
 
-const today = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })
-const greeting = computed(() => {
-  const h = new Date().getHours()
-  if (h < 6) return '夜深了'; if (h < 9) return '早上好'; if (h < 12) return '上午好'
-  if (h < 14) return '中午好'; if (h < 18) return '下午好'; return '晚上好'
-})
+const today = new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' })
+const greeting = computed(() => { const h=new Date().getHours(); if(h<6)return'夜深了'; if(h<9)return'早上好'; if(h<12)return'上午好'; if(h<14)return'中午好'; if(h<18)return'下午好'; return'晚上好' })
 
-const stats = reactive({ products: 0, orders: 0, customers: 0, sales: 0 })
+const stats = reactive({ products:0, orders:0, customers:0, sales:0 })
 const lowStock = ref([])
-const weather = reactive({ city: '', temp: '', desc: '' })
+const weather = reactive({ city:'', temp:'', desc:'' })
 
-const statsCards = computed(() => [
-  { label: '商品总数', value: stats.products, icon: Goods, bg: '#e6f7ff', color: '#1890ff', link: '/product' },
-  { label: '订单总数', value: stats.orders, icon: Tickets, bg: '#fff7e6', color: '#fa8c16', link: '/order' },
-  { label: '客户总数', value: stats.customers, icon: User, bg: '#f6ffed', color: '#52c41a', link: '/customer' },
-  { label: '销售总额', value: '¥' + stats.sales, icon: Coin, bg: '#fff1f0', color: '#f5222d', link: '' }
+const statCards = computed(() => [
+  { label:'商品总数', value:stats.products, icon:Goods, color:'#60a5fa', glow:'#60a5fa', link:'/product' },
+  { label:'订单总数', value:stats.orders, icon:Tickets, color:'#f59e0b', glow:'#f59e0b', link:'/order' },
+  { label:'客户总数', value:stats.customers, icon:User, color:'#34d399', glow:'#34d399', link:'/customer' },
+  { label:'销售总额', value:'¥'+stats.sales, icon:Coin, color:'#f472b6', glow:'#f472b6', link:'' }
 ])
 
-const weatherIcon = computed(() => {
-  const d = weather.desc; if (!d) return '🌤️'
-  if (d.includes('晴')) return '☀️'; if (d.includes('云')||d.includes('阴')) return '⛅'
-  if (d.includes('雨')) return '🌧️'; if (d.includes('雪')) return '❄️'; return '🌤️'
-})
-
-const barChart = ref(null)
+const weatherIcon = computed(() => { const d=weather.desc; if(!d)return'🌤️'; if(d.includes('晴'))return'☀️'; if(d.includes('云')||d.includes('阴'))return'⛅'; if(d.includes('雨'))return'🌧️'; return'🌤️' })
 
 onMounted(async () => {
   try {
-    const [p, c, o] = await Promise.all([getAllProducts(), getAllCustomers(), getOrderList({ page: 1, limit: 1000 })])
-    stats.products = p.data.length
-    stats.customers = c.data.length
-    lowStock.value = p.data.filter(x => x.stock < 10)
-    const orders = o.data.list || []
-    stats.orders = o.data.total || orders.length
-    stats.sales = orders.filter(x => x.status !== 'cancelled').reduce((s, x) => s + parseFloat(x.totalAmount || 0), 0).toFixed(2)
-    await nextTick()
-    initChart(orders)
-    fetchWeather()
+    const [p,c,o] = await Promise.all([getAllProducts(), getAllCustomers(), getOrderList({page:1,limit:1000})])
+    stats.products = p.data.length; stats.customers = c.data.length
+    lowStock.value = p.data.filter(x=>x.stock<10)
+    const orders = o.data.list||[]; stats.orders = o.data.total||orders.length
+    stats.sales = orders.filter(x=>x.status!=='cancelled').reduce((s,x)=>s+parseFloat(x.totalAmount||0),0).toFixed(2)
+    await nextTick(); initChart(orders); fetchWeather()
   } catch {}
 })
 
 function initChart(orders) {
-  if (!barChart.value) return
-  const chart = echarts.init(barChart.value)
-  const map = {}
-  orders.filter(o => o.status !== 'cancelled').forEach(o => {
-    const d = (o.createTime || '').substring(0, 10)
-    if (d) map[d] = (map[d] || 0) + parseFloat(o.totalAmount || 0)
-  })
-  const days = Object.keys(map).sort().slice(-14)
-  chart.setOption({
-    tooltip: { trigger: 'axis' }, grid: { left: 50, right: 20, top: 10, bottom: 20 },
-    xAxis: { type: 'category', data: days, axisLabel: { rotate: 30, fontSize: 10 } },
-    yAxis: { type: 'value', name: '元' },
-    series: [{ type: 'bar', data: days.map(d => map[d]), itemStyle: { color: '#409EFF', borderRadius: [4,4,0,0] }, barMaxWidth: 30 }]
+  if (!barChart.value) return; const c = echarts.init(barChart.value)
+  const m = {}; orders.filter(o=>o.status!=='cancelled').forEach(o=>{const d=(o.createTime||'').substring(0,10); if(d) m[d]=(m[d]||0)+parseFloat(o.totalAmount||0)})
+  const days = Object.keys(m).sort().slice(-14)
+  c.setOption({
+    tooltip:{trigger:'axis'}, grid:{left:50,right:10,top:10,bottom:20},
+    xAxis:{type:'category',data:days,axisLabel:{color:'#596773',fontSize:10,rotate:30},axisLine:{lineStyle:{color:'#2C333A'}}},
+    yAxis:{type:'value',name:'元',nameTextStyle:{color:'#596773'},axisLabel:{color:'#596773'},splitLine:{lineStyle:{color:'#2C333A'}}},
+    series:[{type:'bar',data:days.map(d=>m[d]),itemStyle:{color:'#a855f7',borderRadius:[4,4,0,0]},barMaxWidth:30}]
   })
 }
 
 async function fetchWeather() {
-  try {
-    const ipRes = await fetch('https://restapi.amap.com/v3/ip?key=YOUR_AMAP_KEY')
-    if (!ipRes.ok) return
-    const ipData = await ipRes.json()
-    const wxRes = await fetch(`https://restapi.amap.com/v3/weather/weatherInfo?key=YOUR_AMAP_KEY&city=${ipData.adcode || '110000'}&extensions=base`)
-    const wxData = await wxRes.json()
-    if (wxData.status === '1' && wxData.lives) {
-      const l = wxData.lives[0]
-      Object.assign(weather, { city: l.city, temp: l.temperature, desc: l.weather })
-    }
-  } catch {}
+  try { const r=await fetch('https://restapi.amap.com/v3/ip?key=YOUR_AMAP_KEY'); if(!r.ok)return; const d=await r.json(); const w=await fetch(`https://restapi.amap.com/v3/weather/weatherInfo?key=YOUR_AMAP_KEY&city=${d.adcode||'110000'}&extensions=base`); const j=await w.json(); if(j.status==='1'&&j.lives){const l=j.lives[0]; Object.assign(weather,{city:l.city,temp:l.temperature,desc:l.weather})} } catch {}
 }
 </script>
