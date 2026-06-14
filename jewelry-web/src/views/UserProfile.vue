@@ -14,7 +14,7 @@
       <div>
         <div class="text-lg font-bold" style="color:var(--text-primary)">{{ form.realName || form.username }}</div>
         <div class="text-xs mt-1" style="color:var(--text-muted)">{{ form.role==='admin'?'管理员':'销售员' }} · {{ form.email || '未设置邮箱' }}</div>
-        <button @click="saveProfile" :disabled="saving" class="mt-2 px-3 py-1 rounded-lg text-xs font-medium transition-all hover:scale-105" style="background:var(--accent); color:#fff">
+        <button @click="saveProfile" :disabled="saving" class="mt-2 px-3 py-1 rounded-lg text-xs font-medium transition-all hover:scale-105" style="background:rgba(168,85,247,0.15); color:var(--accent)">
           {{ saving?'保存中...':'更新头像' }}
         </button>
       </div>
