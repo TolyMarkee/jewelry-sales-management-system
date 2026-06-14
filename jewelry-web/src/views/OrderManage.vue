@@ -1,49 +1,87 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-bold" style="color:#DEE4EA">订单管理</h2>
-      <button @click="handleAdd" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105" style="background:linear-gradient(135deg,#a855f7,#6366f1); color:#fff">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>创建订单
+      <div>
+        <h2 class="text-lg font-bold" style="color:#DEE4EA">订单管理</h2>
+        <p class="text-xs mt-0.5" style="color:#596773">共 {{ total }} 笔订单</p>
+      </div>
+      <button @click="handleAdd" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-105 active:scale-95 shadow-lg" style="background:linear-gradient(135deg,#a855f7,#6366f1); color:#fff; box-shadow:0 4px 24px rgba(168,85,247,0.3)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        创建订单
       </button>
     </div>
 
     <!-- Search -->
     <div class="flex gap-3 flex-wrap">
-      <input v-model="search.orderNo" placeholder="订单编号..." class="h-9 px-3 rounded-lg text-sm outline-none w-48" style="background:#101214; border:1px solid #2C333A; color:#DEE4EA" @keyup.enter="loadData" />
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2" style="color:#596773" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input v-model="search.orderNo" placeholder="搜索订单编号..." class="h-9 pl-9 pr-3 rounded-lg text-sm outline-none w-52 transition-all focus:w-64" style="background:#101214; border:1px solid #2C333A; color:#DEE4EA" @keyup.enter="loadData" />
+      </div>
       <select v-model="search.status" @change="loadData" class="h-9 px-3 rounded-lg text-sm outline-none cursor-pointer" style="background:#101214; border:1px solid #2C333A; color:#94a3b8">
         <option value="">全部状态</option><option v-for="o in statusOpts" :key="o.value" :value="o.value">{{ o.label }}</option>
       </select>
     </div>
 
-    <!-- Order cards -->
-    <div class="space-y-2">
-      <div v-for="o in tableData" :key="o.id" class="group rounded-xl p-4 transition-all hover:translate-x-1" style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.04)">
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-3">
-            <span class="text-sm font-mono" style="color:#DEE4EA">{{ o.orderNo }}</span>
-            <span class="text-[10px] px-2 py-0.5 rounded-full" :style="{background:statusColor(o.status)+'20', color:statusColor(o.status)}">{{ statusLabel(o.status) }}</span>
+    <!-- Order History Timeline -->
+    <div class="relative">
+      <!-- Timeline line -->
+      <div class="absolute left-[19px] top-0 bottom-0 w-px hidden md:block" style="background:linear-gradient(to bottom, rgba(168,85,247,0.4), rgba(99,102,241,0.1), transparent)" />
+
+      <div class="space-y-3">
+        <div v-for="(o, idx) in tableData" :key="o.id"
+          class="group relative md:ml-10 rounded-2xl transition-all duration-300 hover:-translate-y-0.5"
+          style="background:rgba(22,26,29,0.5); border:1px solid rgba(255,255,255,0.04); box-shadow:0 1px 3px rgba(0,0,0,0.3)"
+        >
+          <!-- Timeline dot -->
+          <div class="absolute -left-[28px] top-5 w-3 h-3 rounded-full border-2 hidden md:block transition-all group-hover:scale-125" :style="{background:statusColor(o.status), borderColor:statusColor(o.status), boxShadow:`0 0 12px ${statusColor(o.status)}40`}" />
+
+          <div class="p-4">
+            <div class="flex items-start justify-between flex-wrap gap-2">
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-mono font-bold tracking-wider" style="color:#DEE4EA"># {{ o.orderNo }}</span>
+                <AnimatedStatusBadge :status="o.status" />
+              </div>
+              <span class="text-lg font-bold" :style="{color:o.status==='completed'?'#34d399':'#f59e0b'}">¥{{ o.totalAmount }}</span>
+            </div>
+
+            <!-- Meta row -->
+            <div class="flex items-center gap-3 mt-2.5 text-xs" style="color:#596773">
+              <div class="flex items-center gap-1">
+                <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px]" style="background:rgba(96,165,250,0.15); color:#60a5fa">{{ (o.customerName||'?')[0] }}</div>
+                {{ o.customerName }}
+              </div>
+              <span>·</span>
+              <span>{{ o.userName }}</span>
+              <span>·</span>
+              <span>{{ o.createTime?.substring(0,16) }}</span>
+              <span v-if="o.items?.length" class="ml-auto text-[10px] px-1.5 py-0.5 rounded-md" style="background:rgba(148,163,184,0.08); color:#94a3b8">
+                {{ o.items.length }}件商品
+              </span>
+            </div>
+
+            <!-- Actions on hover -->
+            <div class="flex items-center gap-2 mt-3 pt-3 border-t opacity-0 group-hover:opacity-100 transition-opacity" style="border-color:rgba(255,255,255,0.04)">
+              <button v-if="o.status==='pending'" @click="updateStatus(o.id,'paid')" class="text-[10px] px-3 py-1.5 rounded-lg transition-all hover:scale-105 font-medium" style="background:rgba(96,165,250,0.12); color:#60a5fa">确认付款</button>
+              <button v-if="o.status==='paid'" @click="updateStatus(o.id,'shipped')" class="text-[10px] px-3 py-1.5 rounded-lg transition-all hover:scale-105 font-medium" style="background:rgba(168,85,247,0.12); color:#a855f7">确认发货</button>
+              <button v-if="o.status==='shipped'" @click="updateStatus(o.id,'completed')" class="text-[10px] px-3 py-1.5 rounded-lg transition-all hover:scale-105 font-medium" style="background:rgba(52,211,153,0.12); color:#34d399">标记完成</button>
+              <button @click="showDetail(o)" class="text-[10px] px-3 py-1.5 rounded-lg transition-all hover:scale-105" style="background:rgba(148,163,184,0.08); color:#94a3b8">查看详情</button>
+              <button @click="handleDelete(o)" class="text-[10px] px-3 py-1.5 rounded-lg transition-all hover:scale-105 ml-auto" style="color:#ef4444">删除</button>
+            </div>
           </div>
-          <span class="text-sm font-bold" style="color:#34d399">¥{{ o.totalAmount }}</span>
         </div>
-        <div class="flex items-center gap-4 text-xs" style="color:#596773">
-          <span>👤 {{ o.customerName }}</span><span>💼 {{ o.userName }}</span><span>🕐 {{ o.createTime?.substring(0,16) }}</span>
-        </div>
-        <!-- Status flow -->
-        <div class="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button v-if="o.status==='pending'" @click="updateStatus(o.id,'paid')" class="text-[10px] px-2 py-1 rounded-lg transition-all hover:scale-105" style="background:rgba(96,165,250,0.15); color:#60a5fa">标记付款</button>
-          <button v-if="o.status==='paid'" @click="updateStatus(o.id,'shipped')" class="text-[10px] px-2 py-1 rounded-lg transition-all hover:scale-105" style="background:rgba(168,85,247,0.15); color:#a855f7">标记发货</button>
-          <button v-if="o.status==='shipped'" @click="updateStatus(o.id,'completed')" class="text-[10px] px-2 py-1 rounded-lg transition-all hover:scale-105" style="background:rgba(52,211,153,0.15); color:#34d399">标记完成</button>
-          <button @click="showDetail(o)" class="text-[10px] px-2 py-1 rounded-lg transition-all hover:scale-105" style="background:rgba(148,163,184,0.1); color:#94a3b8">详情</button>
-          <button @click="handleDelete(o)" class="text-[10px] px-2 py-1 rounded-lg transition-all hover:scale-105 ml-auto" style="color:#ef4444">删除</button>
-        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div v-if="tableData.length===0" class="text-center py-16">
+        <div class="text-4xl mb-3 opacity-20">📋</div>
+        <div class="text-sm" style="color:#596773">暂无订单记录</div>
+        <button @click="handleAdd" class="mt-3 text-xs font-medium transition-all hover:scale-105" style="color:#a855f7">创建第一笔订单 →</button>
       </div>
     </div>
 
-    <div class="flex justify-center pt-4">
-      <el-pagination v-model:current-page="search.page" v-model:page-size="search.limit" :total="total" :page-sizes="[10,20,50]" layout="total,prev,pager,next" small @change="loadData" />
-    </div>
+    <div class="flex justify-center pt-4"><el-pagination v-model:current-page="search.page" v-model:page-size="search.limit" :total="total" :page-sizes="[10,20,50]" layout="total,prev,pager,next" small @change="loadData" /></div>
 
-    <!-- Create dialog -->
+    <!-- Create dialog (unchanged) -->
     <el-dialog v-model="dialogVisible" title="创建订单" width="700px" @closed="resetOrder">
       <el-form :model="orderForm" label-width="80px">
         <el-form-item label="客户"><el-select v-model="orderForm.customerId" filterable class="w-full"><el-option v-for="c in custList" :key="c.id" :label="c.name+' - '+c.phone" :value="c.id" /></el-select></el-form-item>
@@ -61,7 +99,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>添加商品
       </button>
       <div class="text-right mt-4 text-lg font-bold" style="color:#34d399">总额：¥{{ totalPrice }}</div>
-      <template #footer><el-button @click="dialogVisible=false">取消</el-button><el-button type="primary" @click="submitOrder" style="background:linear-gradient(135deg,#a855f7,#6366f1); border:none">提交订单</el-button></template>
+      <template #footer><el-button @click="dialogVisible=false">取消</el-button><el-button type="primary" @click="submitOrder" style="background:linear-gradient(135deg,#a855f7,#6366f1); border:none; box-shadow:0 4px 20px rgba(168,85,247,0.3)">提交订单</el-button></template>
     </el-dialog>
 
     <!-- Detail dialog -->
@@ -71,12 +109,11 @@
           <p>订单编号：<span style="color:#DEE4EA">{{ curOrder.orderNo }}</span></p>
           <p>客户：<span style="color:#DEE4EA">{{ curOrder.customerName }}</span></p>
           <p>销售员：<span style="color:#DEE4EA">{{ curOrder.userName }}</span></p>
-          <p>状态：<span :style="{color:statusColor(curOrder.status)}">{{ statusLabel(curOrder.status) }}</span></p>
+          <p>状态：<AnimatedStatusBadge :status="curOrder.status" /></p>
         </div>
         <div class="mt-4 space-y-1">
-          <div v-for="item in curOrder.items" :key="item.id" class="flex justify-between text-sm py-1 border-b" style="border-color:rgba(255,255,255,0.04)">
-            <span style="color:#DEE4EA">{{ item.productName }}</span>
-            <span style="color:#596773">x{{ item.quantity }} · ¥{{ item.price }}</span>
+          <div v-for="item in curOrder.items" :key="item.id" class="flex justify-between text-sm py-1.5 border-b" style="border-color:rgba(255,255,255,0.04)">
+            <span style="color:#DEE4EA">{{ item.productName }}</span><span style="color:#596773">x{{ item.quantity }} · ¥{{ item.price }}</span>
           </div>
         </div>
         <div class="text-right mt-3 text-lg font-bold" style="color:#34d399">¥{{ curOrder.totalAmount }}</div>
@@ -89,6 +126,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getOrderList, saveOrder, updateOrderStatus, deleteOrder, getAllCustomers, getAllProducts } from '@/api'
+import AnimatedStatusBadge from '@/components/AnimatedStatusBadge.vue'
 
 const tableData = ref([]); const total = ref(0); const dialogVisible = ref(false); const detailVisible = ref(false)
 const custList = ref([]); const prodList = ref([]); const curOrder = ref(null)
@@ -96,7 +134,6 @@ const search = reactive({ orderNo:'', status:'', page:1, limit:10 })
 const orderForm = reactive({ customerId:null, remark:'', items:[{productId:null,price:0,quantity:1}] })
 const totalPrice = computed(()=>orderForm.items.reduce((s,i)=>s+i.price*i.quantity,0).toFixed(2))
 const statusOpts = [{label:'待付款',value:'pending'},{label:'已付款',value:'paid'},{label:'已发货',value:'shipped'},{label:'已完成',value:'completed'}]
-function statusLabel(s){const m={pending:'待付款',paid:'已付款',shipped:'已发货',completed:'已完成',cancelled:'已取消'};return m[s]||s}
 function statusColor(s){const m={pending:'#f59e0b',paid:'#60a5fa',shipped:'#a855f7',completed:'#34d399',cancelled:'#ef4444'};return m[s]||'#94a3b8'}
 
 onMounted(()=>loadData())
@@ -106,7 +143,7 @@ function resetOrder(){Object.assign(orderForm,{customerId:null,remark:'',items:[
 function onProdChange(item){const p=prodList.value.find(x=>x.id===item.productId);if(p)item.price=p.price}
 function removeItem(i){if(orderForm.items.length>1)orderForm.items.splice(i,1)}
 async function submitOrder(){if(!orderForm.customerId){ElMessage.warning('请选择客户');return};if(orderForm.items.some(i=>!i.productId)){ElMessage.warning('请选择商品');return};const data={customerId:orderForm.customerId,remark:orderForm.remark,totalAmount:parseFloat(totalPrice.value),items:orderForm.items.map(i=>({productId:i.productId,quantity:i.quantity,price:i.price}))};await saveOrder(data);ElMessage.success('下单成功');dialogVisible.value=false;loadData()}
-async function updateStatus(id,status){await updateOrderStatus({id,status});ElMessage.success('更新成功');loadData()}
+async function updateStatus(id,status){await updateOrderStatus({id,status});ElMessage.success('状态已更新');loadData()}
 function showDetail(row){curOrder.value=row;detailVisible.value=true}
 async function handleDelete(row){await ElMessageBox.confirm('确定删除？','提示',{type:'warning'});await deleteOrder(row.id);ElMessage.success('已删除');loadData()}
 </script>

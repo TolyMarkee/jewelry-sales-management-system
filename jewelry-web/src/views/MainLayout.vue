@@ -3,9 +3,17 @@
     <!-- Glass sidebar -->
     <aside class="w-60 flex-shrink-0 flex flex-col border-r border-white/[0.06]" style="background:rgba(22,26,29,0.7); backdrop-filter:blur(24px)">
       <!-- Logo -->
-      <div class="h-14 flex items-center gap-2 px-5 border-b border-white/[0.04]">
-        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold" style="background:linear-gradient(135deg,#a855f7,#6366f1)">J</div>
-        <span class="text-sm font-semibold" style="color:#DEE4EA">Jewelry MS</span>
+      <div class="h-14 flex items-center gap-3 px-5 border-b border-white/[0.04]">
+        <div class="relative">
+          <div class="absolute -inset-1 rounded-lg blur opacity-60" style="background:linear-gradient(135deg,#a855f7,#6366f1)" />
+          <div class="relative w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#a855f7,#6366f1)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+        </div>
+        <div>
+          <div class="text-sm font-bold tracking-wide" style="color:#DEE4EA">LUXE GEM</div>
+          <div class="text-[10px] -mt-0.5 font-medium tracking-wider" style="background:linear-gradient(135deg,#a855f7,#6366f1); -webkit-background-clip:text; -webkit-text-fill-color:transparent">MANAGEMENT</div>
+        </div>
       </div>
 
       <!-- Navigation -->
