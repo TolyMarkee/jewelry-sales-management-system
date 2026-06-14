@@ -47,7 +47,7 @@
                 :style="msg.role==='user'
                   ? {background:'linear-gradient(135deg,#6366f1,#a855f7)'}
                   : {background:'var(--bg)', color:'var(--text-primary)'}"
-              >{{ msg.content }}</div>
+              v-html="formatMsg(msg.content)" />
             </div>
             <div v-if="loading" class="flex justify-start">
               <div class="px-3 py-1.5 rounded-2xl rounded-bl-md text-xs flex items-center gap-1" style="background:var(--bg); color:var(--text-muted)">
@@ -152,6 +152,12 @@ function onKeydown(e) {
 }
 
 const messages = ref([])
+
+function formatMsg(text) {
+  return text
+    .replace(/。/g, '。<br>')
+    .replace(/【([^】]+)】/g, '<strong style="color:var(--accent)">【$1】</strong>')
+}
 
 async function send() {
   const msg = input.value.trim()
