@@ -72,14 +72,53 @@ body { font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei
 body { background: var(--bg); color: var(--text-primary); }
 
 /* ===== Element Plus Overrides ===== */
-.el-dialog { --el-dialog-bg-color: var(--el-bg-color-overlay); border-radius: 16px !important; border: 1px solid var(--el-border-color) !important; }
-.el-dialog__header { border-bottom: 1px solid var(--el-border-color); padding: 16px 20px !important; }
-.el-dialog__title { color: var(--el-text-color-primary) !important; font-weight: 600 !important; }
-.el-dialog__body { color: var(--text-secondary); }
-.el-dialog__headerbtn .el-dialog__close { color: var(--text-muted) !important; }
-.el-input__wrapper, .el-input-number .el-input__wrapper { background: var(--input-bg) !important; border: 1px solid var(--border-strong) !important; border-radius: 10px !important; box-shadow: none !important; }
-.el-input__inner, .el-input-number__input { background: transparent !important; color: var(--text-primary) !important; }
-.el-input__inner::placeholder { color: var(--text-muted) !important; }
+/* ===== Dialog + Form (hard override for dark mode) ===== */
+.el-dialog { background: #161A1D !important; border-radius: 16px !important; border: 1px solid #2C333A !important; }
+.el-dialog__header { border-bottom: 1px solid #2C333A; padding: 16px 20px !important; }
+.el-dialog__title { color: #DEE4EA !important; font-weight: 600 !important; }
+.el-dialog__body { color: #94a3b8 !important; }
+.el-dialog__headerbtn .el-dialog__close { color: #596773 !important; }
+.el-dialog__headerbtn .el-dialog__close:hover { color: #94a3b8 !important; }
+.el-dialog__footer { border-top: 1px solid #2C333A; padding-top: 12px; }
+
+/* Input / Select inside dialog - hard dark colors */
+.el-input__wrapper, .el-input-number .el-input__wrapper, .el-textarea__inner {
+  background: #101214 !important; border: 1px solid #2C333A !important; border-radius: 10px !important; box-shadow: none !important;
+}
+.el-input__inner, .el-input-number__input, .el-textarea__inner {
+  background: transparent !important; color: #DEE4EA !important; caret-color: #DEE4EA !important;
+}
+.el-input__inner::placeholder, .el-textarea__inner::placeholder { color: #596773 !important; }
+.el-input__suffix, .el-input__suffix-inner { color: #596773 !important; }
+
+/* Select dropdown */
+.el-select-dropdown { background: #161A1D !important; border: 1px solid #2C333A !important; box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important; }
+.el-select-dropdown__item { color: #94a3b8 !important; }
+.el-select-dropdown__item.hover, .el-select-dropdown__item:hover { background: rgba(168,85,247,0.12) !important; color: #c4b5fd !important; }
+.el-select-dropdown__item.selected { color: #a855f7 !important; font-weight: 600 !important; }
+.el-select-dropdown__empty { color: #596773 !important; }
+
+/* Pagination */
+.el-pagination button, .el-pagination .el-pager li { background: #161A1D !important; color: #94a3b8 !important; border: 1px solid #2C333A !important; border-radius: 8px !important; }
+.el-pagination button:hover, .el-pagination .el-pager li:hover { color: #c4b5fd !important; border-color: rgba(168,85,247,0.3) !important; }
+.el-pagination .el-pager li.is-active { background: rgba(168,85,247,0.2) !important; color: #c4b5fd !important; }
+.el-pagination .el-pagination__total, .el-pagination .el-pagination__sizes { color: #596773 !important; }
+
+/* Buttons */
+.el-button--default { --el-button-bg-color: transparent; --el-button-border-color: #2C333A; --el-button-text-color: #94a3b8; }
+.el-button--primary { --el-button-bg-color: #a855f7; --el-button-border-color: #a855f7; }
+
+/* Form labels & message box */
+.el-form-item__label { color: #94a3b8 !important; }
+.el-message-box { background: #161A1D !important; border: 1px solid #2C333A !important; }
+.el-message-box__title { color: #DEE4EA !important; }
+.el-message-box__message { color: #94a3b8 !important; }
+.el-popper { background: #161A1D !important; border: 1px solid #2C333A !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2C333A; border-radius: 3px; }
 .el-select-dropdown { background: var(--el-bg-color-overlay) !important; border: 1px solid var(--border-strong) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.3) !important; }
 .el-select-dropdown__item { color: var(--text-secondary) !important; font-size: 13px !important; }
 .el-select-dropdown__item.hover, .el-select-dropdown__item:hover { background: rgba(99,102,241,0.12) !important; color: var(--accent) !important; }
