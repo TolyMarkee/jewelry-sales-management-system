@@ -5,7 +5,7 @@ import com.jewelry.common.R;
 import com.jewelry.entity.User;
 import com.jewelry.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +18,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * 用户列表（管理员）
@@ -45,7 +48,7 @@ public class UserController {
     }
 
     /**
-     * 更新个人资料（姓名、电话、邮箱、头像）
+     * 更新个人资料
      */
     @PutMapping("/profile")
     public R updateProfile(@RequestBody User user, HttpServletRequest request) {
@@ -57,14 +60,12 @@ public class UserController {
         updateUser.setEmail(user.getEmail());
         updateUser.setAvatar(user.getAvatar());
         userService.updateById(updateUser);
-
-        // 返回更新后的用户信息
         User fresh = userService.getById(userId);
         return R.ok("资料更新成功").put("data", fresh);
     }
 
     /**
-     * 修改密码
+     * 修改密码（BCrypt）
      */
     @PutMapping("/password")
     public R changePassword(@RequestBody Map<String, String> params, HttpServletRequest request) {
@@ -72,30 +73,32 @@ public class UserController {
         String oldPassword = params.get("oldPassword");
         String newPassword = params.get("newPassword");
 
-        if (oldPassword == null || newPassword == null) {
-            return R.error("参数不完整");
+        if (oldPassword == null || newPassword == null || newPassword.length() < 6) {
+            return R.error("新密码至少6位");
         }
 
         User user = userService.getById(userId);
-        String oldMd5 = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
-        if (!oldMd5.equals(user.getPassword())) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             return R.error("原密码错误");
         }
 
         User updateUser = new User();
         updateUser.setId(userId);
-        updateUser.setPassword(DigestUtils.md5DigestAsHex(newPassword.getBytes()));
+        updateUser.setPassword(passwordEncoder.encode(newPassword));
         userService.updateById(updateUser);
 
         return R.ok("密码修改成功，请重新登录");
     }
 
     /**
-     * 新增用户
+     * 新增用户（BCrypt 加密）
      */
     @PostMapping("/save")
     public R save(@RequestBody User user) {
-        user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
+        if (user.getPassword() == null || user.getPassword().length() < 6) {
+            return R.error("密码至少6位");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.save(user);
         return R.ok("添加成功");
     }
@@ -106,7 +109,10 @@ public class UserController {
     @PutMapping("/update")
     public R update(@RequestBody User user) {
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
+            if (user.getPassword().length() < 6) {
+                return R.error("密码至少6位");
+            }
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else {
             user.setPassword(null);
         }

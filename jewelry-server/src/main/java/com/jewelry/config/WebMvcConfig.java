@@ -1,6 +1,8 @@
 package com.jewelry.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -12,8 +14,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private LoginInterceptor loginInterceptor;
 
+    @Autowired
+    private RateLimitInterceptor rateLimitInterceptor;
+
     /**
-     * 跨域配置
+     * 跨域配置（生产环境应限制 allowedOrigins）
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -26,12 +31,28 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * 拦截器配置
+     * 拦截器链：先限流 → 再登录验证
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // 限流拦截器（所有 /api/** 请求）
+        registry.addInterceptor(rateLimitInterceptor)
+                .addPathPatterns("/api/**");
+        // 登录拦截器（除 /api/login 外都需要 Token）
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/login");
+    }
+
+    /**
+     * 注册 XSS 过滤器
+     */
+    @Bean
+    public FilterRegistrationBean<XssFilter> xssFilterRegistration() {
+        FilterRegistrationBean<XssFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new XssFilter());
+        registration.addUrlPatterns("/*");
+        registration.setOrder(1);
+        return registration;
     }
 }

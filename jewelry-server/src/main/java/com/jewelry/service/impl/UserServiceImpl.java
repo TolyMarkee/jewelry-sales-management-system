@@ -7,6 +7,7 @@ import com.jewelry.entity.User;
 import com.jewelry.mapper.UserMapper;
 import com.jewelry.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -19,22 +20,43 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public Map<String, Object> login(String username, String password) {
-        // MD5加密密码
-        String md5Password = DigestUtils.md5DigestAsHex(password.getBytes());
-
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
-        wrapper.eq("password", md5Password);
-
         User user = baseMapper.selectOne(wrapper);
 
         if (user == null) {
             return null;
         }
 
-        // 生成Token
+        String stored = user.getPassword();
+        boolean matched = false;
+
+        // BCrypt 格式：$2a$10$...
+        if (stored != null && stored.startsWith("$2a$")) {
+            matched = passwordEncoder.matches(password, stored);
+        } else {
+            // 兼容旧的 MD5 密码，验证成功后自动升级为 BCrypt
+            String md5 = DigestUtils.md5DigestAsHex(password.getBytes());
+            if (md5.equals(stored)) {
+                matched = true;
+                // 自动升级密码为 BCrypt
+                User update = new User();
+                update.setId(user.getId());
+                update.setPassword(passwordEncoder.encode(password));
+                baseMapper.updateById(update);
+                user.setPassword(update.getPassword());
+            }
+        }
+
+        if (!matched) {
+            return null;
+        }
+
         String token = jwtUtil.generateToken(user.getId(), user.getUsername());
 
         Map<String, Object> result = new HashMap<>();

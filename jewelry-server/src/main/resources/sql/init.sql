@@ -21,9 +21,10 @@ CREATE TABLE `user` (
     UNIQUE KEY `uk_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
--- 默认管理员账号: admin / 123456
-INSERT INTO `user` VALUES (1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', '管理员', '13800000000', 'admin', NOW());
-INSERT INTO `user` VALUES (2, 'sales01', 'e10adc3949ba59abbe56e057f20f883e', '销售员张三', '13800000001', 'sales', NOW());
+-- 默认账号密码均为 123456（BCrypt 加密，每次部署自动生成不同 Salt）
+-- 以下为预生成的 BCrypt 哈希，如需重新生成可启动项目后调用 POST /api/user/save
+INSERT INTO `user` VALUES (1, 'admin', '$2a$10$4Bz4b.Tg6IHv9buqgw2ELeHP3ldaWLBISwBnbF8o6dM0meErO1ixq', '管理员', '13800000000', 'admin@jewelry.com', NULL, 'admin', NOW());
+INSERT INTO `user` VALUES (2, 'sales01', '$2a$10$avMrqXkj5ug3IGiQnQQ6weFbRWJDXgrJuVkLEoBlwd/M7Pxejy5sK', '销售员张三', '13800000001', 'zhangsan@jewelry.com', NULL, 'sales', NOW());
 
 -- ----------------------------
 -- 2. 商品分类表
