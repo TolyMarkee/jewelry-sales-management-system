@@ -131,9 +131,10 @@ public class AiController {
     }
 
     private int getTodayUsage(Long userId, String date) {
-        Integer count = jdbc.queryForObject(
-                "SELECT count FROM ai_usage WHERE user_id=? AND usage_date=?", Integer.class, userId, date);
-        return count != null ? count : 0;
+        List<Integer> results = jdbc.query(
+                "SELECT count FROM ai_usage WHERE user_id=? AND usage_date=?",
+                (rs, rowNum) -> rs.getInt("count"), userId, date);
+        return results.isEmpty() ? 0 : results.get(0);
     }
 
     private void incrementUsage(Long userId, String date) {
