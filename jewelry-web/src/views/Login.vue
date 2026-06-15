@@ -13,6 +13,11 @@
         :style="spotlightStyle"
       />
       <div class="relative z-10 w-full max-w-sm">
+        <!-- Mode tabs -->
+        <div class="flex mb-6 rounded-xl p-1 gap-1" style="background:var(--input-bg); border:1px solid var(--border-strong)">
+          <button @click="mode='staff'" class="flex-1 py-2 rounded-lg text-xs font-medium transition-all" :style="mode==='staff'?{background:'var(--accent)', color:'#fff'}:{color:'var(--text-muted)'}">员工登录</button>
+          <button @click="mode='customer'" class="flex-1 py-2 rounded-lg text-xs font-medium transition-all" :style="mode==='customer'?{background:'var(--accent)', color:'#fff'}:{color:'var(--text-muted)'}">客户登录</button>
+        </div>
         <div class="text-center mb-6">
           <!-- Illustration with purple glow, inspired by mission-success-dialog -->
           <!-- Animated illustration -->
@@ -39,7 +44,7 @@
           </div>
           <h2 class="mb-1 flex items-center justify-center gap-2 text-2xl font-bold" style="color:var(--text-primary)">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            珠宝首饰销售管理
+            LUXE GEM 珠宝商城
           </h2>
           <p class="text-sm" style="color:var(--text-muted)">登录你的账户以继续</p>
         </div>
@@ -50,20 +55,31 @@
           </a>
         </div>
         <p class="text-center text-xs mb-6" style="color:var(--text-muted)">或使用账号密码登录</p>
-        <div class="space-y-4">
+        <!-- Staff login -->
+        <div v-if="mode==='staff'" class="space-y-4">
           <AppInput v-model="form.username" placeholder="用户名" icon="user" @enter="handleLogin" />
           <AppInput v-model="form.password" placeholder="密码" icon="lock" type="password" @enter="handleLogin" />
         </div>
-        <a href="#" class="text-right text-xs mt-2 block hover:underline" style="color:var(--text-muted)">忘记密码？</a>
+        <!-- Customer login -->
+        <div v-else class="space-y-4">
+          <AppInput v-model="customerForm.phone" placeholder="手机号" icon="user" @enter="handleCustomerLogin" />
+          <AppInput v-model="customerForm.password" placeholder="密码" icon="lock" type="password" @enter="handleCustomerLogin" />
+          <div v-if="isRegistering" class="space-y-3">
+            <AppInput v-model="customerForm.name" placeholder="姓名" icon="user" />
+            <input v-model="customerForm.email" class="w-full h-[52px] px-4 rounded-md text-sm outline-none" style="background:var(--input-bg); border:2px solid var(--border-strong); color:var(--text-primary)" placeholder="邮箱（选填）" />
+          </div>
+        </div>
+        <div class="flex justify-between items-center mt-2" v-if="mode==='customer'">
+          <a href="#" @click.prevent="isRegistering=!isRegistering" class="text-xs hover:underline" style="color:var(--text-muted)">{{ isRegistering?'已有账号？登录':'没有账号？注册' }}</a>
+          <a href="#" class="text-xs hover:underline" style="color:var(--text-muted)">忘记密码？</a>
+        </div>
         <div class="flex justify-center mt-5">
-          <button :disabled="loading" class="group/button relative inline-flex justify-center items-center overflow-hidden rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer disabled:opacity-60 !bg-[#0f172a] hover:!bg-[#020617] shadow-[0_4px_24px_rgba(15,23,42,0.4)]" @click="handleLogin">
-            <span class="text-sm px-3 py-1">{{ loading ? '验证中...' : '登 录' }}</span>
-            <div class="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
-              <div class="relative h-full w-8 bg-white/20" />
-            </div>
+          <button :disabled="loading" class="group/button relative inline-flex justify-center items-center overflow-hidden rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer disabled:opacity-60 !bg-[#0f172a] hover:!bg-[#020617] shadow-[0_4px_24px_rgba(15,23,42,0.4)]" @click="mode==='staff'?handleLogin():handleCustomerLogin()">
+            <span class="text-sm px-3 py-1">{{ loading?'处理中...':(mode==='customer'&&isRegistering?'注 册':'登 录') }}</span>
+            <div class="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]"><div class="relative h-full w-8 bg-white/20" /></div>
           </button>
         </div>
-        <p class="text-center text-xs mt-4" style="color:var(--text-muted)">默认账号 admin / 123456</p>
+        <p class="text-center text-xs mt-4" style="color:var(--text-muted)">{{ mode==='staff'?'默认账号 admin / 123456':'客户测试 13900000001 / 123456' }}</p>
       </div>
     </div>
     <!-- Right: Image -->
@@ -79,11 +95,15 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { login } from '@/api'
 import AppInput from '@/components/AppInput.vue'
+import request from '@/utils/request'
 
 const router = useRouter()
 const userStore = useUserStore()
 const isLight = computed(() => document.documentElement.classList.contains('light'))
+const mode = ref('staff')
+const isRegistering = ref(false)
 const form = reactive({ username: '', password: '' })
+const customerForm = reactive({ phone: '', password: '', name: '', email: '' })
 const loading = ref(false)
 const mouse = ref({ x: 0, y: 0 })
 const hovering = ref(false)
@@ -102,4 +122,5 @@ const socialIcons = [
 
 function onMouseMove(e) { const r = e.currentTarget.getBoundingClientRect(); mouse.value = { x: e.clientX - r.left, y: e.clientY - r.top } }
 async function handleLogin() { if (!form.username || !form.password) return; loading.value = true; try { const res = await login({ username: form.username, password: form.password }); userStore.setToken(res.data.token); userStore.setUser(res.data.user); router.push('/') } catch { loading.value = false } }
+async function handleCustomerLogin() { if (!customerForm.phone || !customerForm.password) return; loading.value = true; try { if (isRegistering.value) { if (!customerForm.name) return; await request.post('/shop/register', { name: customerForm.name, phone: customerForm.phone, password: customerForm.password, email: customerForm.email }) } const res = await request.post('/shop/login', null, { params: { phone: customerForm.phone, password: customerForm.password } }); localStorage.setItem('shop_token', res.data.token); router.push('/shop') } catch { loading.value = false } }
 </script>
