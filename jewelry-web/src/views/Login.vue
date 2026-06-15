@@ -79,7 +79,6 @@
             <div class="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]"><div class="relative h-full w-8 bg-white/20" /></div>
           </button>
         </div>
-        <p class="text-center text-xs mt-4" style="color:var(--text-muted)">{{ mode==='staff'?'默认账号 admin / 123456':'客户测试 13900000001 / 123456' }}</p>
       </div>
     </div>
     <!-- Right: Image -->

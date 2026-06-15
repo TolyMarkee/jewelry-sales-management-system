@@ -50,7 +50,7 @@
       <div v-for="p in products" :key="p.id" class="group rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl cursor-pointer" style="background:var(--surface); border-color:var(--border)" @click="addToCart(p)">
         <!-- Image with overlay -->
         <div class="relative h-48 overflow-hidden" style="background:var(--bg)">
-          <img v-if="p.image" :src="'/images/'+p.image" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+          <img v-if="p.image" :src="imgUrl(p.image)" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
           <div v-else class="w-full h-full flex items-center justify-center text-5xl opacity-10">💎</div>
           <!-- Hover overlay -->
           <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center" style="background:rgba(0,0,0,0.4)">
@@ -67,7 +67,6 @@
           <p class="text-[11px] truncate" style="color:var(--text-muted)">{{ p.material }}</p>
           <div class="flex items-center justify-between pt-1">
             <span class="text-base font-extrabold" style="color:#ef4444">¥{{ p.price }}</span>
-            <span v-if="p.costPrice" class="text-[10px]" style="color:var(--text-muted)">利润 ¥{{ (p.price-p.costPrice).toFixed(0) }}</span>
           </div>
         </div>
       </div>
@@ -78,7 +77,7 @@
       <div class="px-4 py-3 border-b flex items-center justify-between" style="border-color:var(--border)"><span class="text-sm font-bold" style="color:var(--text-primary)">🛒 购物车 ({{ cart.length }})</span><button @click="cart=[]" class="text-[10px]" style="color:var(--text-muted)">清空</button></div>
       <div class="max-h-56 overflow-y-auto p-3 space-y-2">
         <div v-for="(item,i) in cart" :key="i" class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden" style="background:var(--bg)"><img v-if="item.image" :src="'/images/'+item.image" class="w-full h-full object-cover" /></div>
+          <div class="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden" style="background:var(--bg)"><img v-if="item.image" :src="imgUrl(item.image)" class="w-full h-full object-cover" /></div>
           <div class="flex-1 min-w-0"><div class="text-xs font-medium truncate" style="color:var(--text-primary)">{{ item.name }}</div><div class="flex items-center gap-2 mt-0.5"><button @click="item.qty>1?item.qty--:cart.splice(i,1)" class="text-xs w-5 h-5 rounded flex items-center justify-center" style="background:var(--bg); color:var(--text-muted)">−</button><span class="text-xs font-bold" style="color:var(--text-primary)">{{ item.qty }}</span><button @click="item.qty++" class="text-xs w-5 h-5 rounded flex items-center justify-center" style="background:var(--bg); color:var(--text-muted)">+</button></div></div>
           <span class="text-sm font-bold flex-shrink-0" style="color:#ef4444">¥{{ (item.price*item.qty).toFixed(2) }}</span>
         </div>
@@ -109,6 +108,7 @@ const products=ref([]),cats=ref([]),selCat=ref(null),cart=ref([]),orders=ref([])
 const customer=ref(null),token=ref(''),showLogin=ref(false),showRegister=ref(false),showCheckout=ref(false),loading=ref(false)
 const loginForm=reactive({phone:'',pwd:''}),reg=reactive({name:'',phone:'',password:''}),guest=reactive({name:'',phone:''})
 const total=computed(()=>cart.value.reduce((s,i)=>s+i.price*i.qty,0))
+function imgUrl(src){ return src&&src.startsWith('http')?src:'/images/'+src }
 
 onMounted(()=>{load();request.get('/shop/categories').then(r=>cats.value=r.data);const t=localStorage.getItem('shop_token');if(t){token.value=t;loadProfile()}})
 async function load(){products.value=(await request.get('/shop/products',{params:{categoryId:selCat.value}})).data}
