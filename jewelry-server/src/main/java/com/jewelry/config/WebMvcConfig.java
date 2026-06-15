@@ -41,7 +41,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 登录拦截器（除 /api/login 外都需要 Token）
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/login", "/api/register");
+                .excludePathPatterns("/api/login", "/api/shop/**");
     }
 
     /**
