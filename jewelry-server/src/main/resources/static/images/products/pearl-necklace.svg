@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="pearl" cx="30%" cy="30%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="40%" stop-color="#f5f0e8"/>
+      <stop offset="100%" stop-color="#d4c8b8"/>
+    </radialGradient>
+    <linearGradient id="chain" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d4af37"/><stop offset="100%" stop-color="#b8960c"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="#faf8f5"/>
+  <!-- Chain/string -->
+  <path d="M60 140 Q200 60 340 140" fill="none" stroke="url(#chain)" stroke-width="2.5"/>
+  <!-- Pearls -->
+  <circle cx="80" cy="135" r="18" fill="url(#pearl)" stroke="#d4c8b8" stroke-width="0.5"/>
+  <circle cx="130" cy="110" r="20" fill="url(#pearl)" stroke="#d4c8b8" stroke-width="0.5"/>
+  <circle cx="180" cy="100" r="22" fill="url(#pearl)" stroke="#d4c8b8" stroke-width="0.5"/>
+  <circle cx="230" cy="105" r="20" fill="url(#pearl)" stroke="#d4c8b8" stroke-width="0.5"/>
+  <circle cx="275" cy="118" r="18" fill="url(#pearl)" stroke="#d4c8b8" stroke-width="0.5"/>
+  <circle cx="320" cy="142" r="16" fill="url(#pearl)" stroke="#d4c8b8" stroke-width="0.5"/>
+  <!-- Pendant -->
+  <ellipse cx="200" cy="200" rx="12" ry="18" fill="url(#pearl)" stroke="#d4c8b8" stroke-width="1"/>
+  <text x="200" y="340" text-anchor="middle" font-family="serif" font-size="16" fill="#999">珍珠吊坠项链</text>
+</svg>
