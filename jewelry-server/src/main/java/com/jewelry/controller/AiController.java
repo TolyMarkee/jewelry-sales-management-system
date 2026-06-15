@@ -103,7 +103,9 @@ public class AiController {
             String reply = JSON.parseObject(resp).getJSONArray("choices").getJSONObject(0)
                     .getJSONObject("message").getString("content");
 
-            // Increment usage count
+            // Save to history
+            saveMessage(userId, "user", message);
+            saveMessage(userId, "assistant", reply);
             incrementUsage(userId, today);
 
             Map<String, Object> data = new HashMap<>();
@@ -128,6 +130,34 @@ public class AiController {
         data.put("remaining", DAILY_LIMIT - used);
         data.put("limit", DAILY_LIMIT);
         return R.ok().data(data);
+    }
+
+    /** Load user's chat history */
+    @GetMapping("/history")
+    public R history(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        List<Map<String, Object>> messages = jdbc.query(
+                "SELECT role, content FROM ai_message WHERE user_id=? ORDER BY create_time ASC",
+                (rs, rowNum) -> {
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("role", rs.getString("role"));
+                    m.put("content", rs.getString("content"));
+                    return m;
+                }, userId);
+        return R.ok().data(messages);
+    }
+
+    /** Delete all chat history for current user */
+    @DeleteMapping("/history")
+    public R deleteHistory(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        jdbc.update("DELETE FROM ai_message WHERE user_id=?", userId);
+        return R.ok("历史记录已清除");
+    }
+
+    private void saveMessage(Long userId, String role, String content) {
+        jdbc.update("INSERT INTO ai_message (user_id, role, content) VALUES (?, ?, ?)",
+                userId, role, content);
     }
 
     private int getTodayUsage(Long userId, String date) {

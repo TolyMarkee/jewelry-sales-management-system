@@ -30,6 +30,7 @@
             <div class="flex items-center gap-2">
               <span class="px-2 py-0.5 text-[10px] font-medium rounded-2xl" style="background:rgba(168,85,247,0.15); color:#c4b5fd">DeepSeek Chat</span>
               <span class="text-[10px] font-medium" :style="{color: remaining <= 5 ? '#ef4444' : 'var(--text-muted)'}">剩余{{ remaining }}次</span>
+              <button @click="clearHistory" class="p-1 rounded-full transition-colors text-[10px]" style="color:var(--text-muted)" title="清除历史">🗑</button>
               <button @click="visible = false" class="p-1 rounded-full transition-colors" style="color:var(--text-muted)" @mouseenter="(e) => e.target.style.background='rgba(255,255,255,0.05)'" @mouseleave="(e) => e.target.style.background='transparent'">✕</button>
             </div>
           </div>
@@ -122,6 +123,7 @@
 <script setup>
 import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue'
 import request from '@/utils/request'
+import { ElMessage } from 'element-plus'
 
 const visible = ref(false)
 const input = ref('')
@@ -195,7 +197,13 @@ function onClickOutside(e) {
 
 onMounted(() => document.addEventListener('mousedown', onClickOutside))
 onUnmounted(() => document.removeEventListener('mousedown', onClickOutside))
-watch(visible, (v) => { if (v) fetchRemaining() })
+async function loadHistory() {
+  try { const r = await request.get('/ai/history'); if (r.data && r.data.length) messages.value = r.data } catch {}
+}
+async function clearHistory() {
+  try { await request.delete('/ai/history'); messages.value = []; ElMessage.success('历史已清除') } catch {}
+}
+watch(visible, (v) => { if (v) { fetchRemaining(); loadHistory() } })
 </script>
 
 <style scoped>
