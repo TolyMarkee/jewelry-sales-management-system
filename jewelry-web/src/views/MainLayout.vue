@@ -105,7 +105,7 @@ const menuItems = [
   { path: '/user', label: '用户管理', icon: Setting, admin: true }
 ]
 
-const visibleItems = computed(() => menuItems.filter(i => !i.admin || userStore.isAdmin))
+const visibleItems = computed(() => menuItems.filter(i => !i.admin || userStore.isManagerOrAdmin))
 
 function isActive(path) { return route.path === path }
 

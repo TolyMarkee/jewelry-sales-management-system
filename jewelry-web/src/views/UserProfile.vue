@@ -13,7 +13,7 @@
       </div>
       <div>
         <div class="text-lg font-bold" style="color:var(--text-primary)">{{ form.realName || form.username }}</div>
-        <div class="text-xs mt-1" style="color:var(--text-muted)">{{ form.role==='admin'?'管理员':'销售员' }} · {{ form.email || '未设置邮箱' }}</div>
+        <div class="text-xs mt-1" style="color:var(--text-muted)">{{ {admin:'管理员',manager:'销售主管',sales:'销售员'}[form.role] || '销售员' }} · {{ form.email || '未设置邮箱' }}</div>
         <button @click="triggerUpload" class="mt-2 px-3 py-1 rounded-lg text-xs font-medium transition-all hover:scale-105" style="background:rgba(168,85,247,0.15); color:var(--accent)">更换图片</button>
       </div>
     </div>

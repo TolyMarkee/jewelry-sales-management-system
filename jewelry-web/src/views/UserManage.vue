@@ -14,7 +14,7 @@
           <div class="text-sm font-medium" style="color:var(--text-primary)">{{ u.realName || u.username }}</div>
           <div class="text-xs mt-0.5" style="color:var(--text-muted)">@{{ u.username }} · {{ u.phone || '未填电话' }}</div>
         </div>
-        <span class="text-[10px] px-2 py-0.5 rounded-full font-medium" :style="{background:u.role==='admin'?'rgba(239,68,68,0.15)':'rgba(96,165,250,0.15)', color:u.role==='admin'?'#ef4444':'#60a5fa'}">{{ u.role==='admin'?'管理员':'销售员' }}</span>
+        <span class="text-[10px] px-2 py-0.5 rounded-full font-medium" :style="roleStyle(u.role)">{{ roleLabel(u.role) }}</span>
         <span class="text-xs flex-shrink-0" style="color:var(--text-muted)">{{ u.createTime?.substring(0,10) }}</span>
         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button @click="handleEdit(u)" class="w-7 h-7 rounded-lg flex items-center justify-center hover:scale-110 transition-all" style="color:#60a5fa"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
@@ -29,7 +29,7 @@
         <el-form-item label="密码"><el-input v-model="form.password" :placeholder="form.id?'留空不修改':'请输入密码'" show-password /></el-form-item>
         <el-form-item label="姓名"><el-input v-model="form.realName" /></el-form-item>
         <el-form-item label="电话"><el-input v-model="form.phone" /></el-form-item>
-        <el-form-item label="角色"><el-select v-model="form.role" class="w-full"><el-option label="管理员" value="admin" /><el-option label="销售员" value="sales" /></el-select></el-form-item>
+        <el-form-item label="角色"><el-select v-model="form.role" class="w-full"><el-option label="管理员" value="admin" /><el-option label="销售主管" value="manager" /><el-option label="销售员" value="sales" /></el-select></el-form-item>
       </el-form>
       <template #footer><el-button @click="dialogVisible=false">取消</el-button><el-button type="primary" @click="submitForm" style="background:linear-gradient(135deg,#a855f7,#6366f1); border:none">确定</el-button></template>
     </el-dialog>
@@ -42,6 +42,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { getUserList, saveUser, updateUser, deleteUser } from '@/api'
 
 const tableData = ref([]); const dialogVisible = ref(false); const dialogTitle = ref('新增用户')
+function roleLabel(r){ return {admin:'管理员',manager:'销售主管',sales:'销售员'}[r]||r }
+function roleStyle(r){ const m={admin:{background:'rgba(239,68,68,0.15)',color:'#ef4444'},manager:{background:'rgba(168,85,247,0.15)',color:'#a855f7'},sales:{background:'rgba(96,165,250,0.15)',color:'#60a5fa'}}; return m[r]||m.sales }
 const form = reactive({ id:null,username:'',password:'',realName:'',phone:'',role:'sales' }); const formRef = ref(null)
 
 onMounted(()=>loadData())

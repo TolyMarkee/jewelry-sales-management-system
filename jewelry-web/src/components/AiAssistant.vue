@@ -29,6 +29,7 @@
             </div>
             <div class="flex items-center gap-2">
               <span class="px-2 py-0.5 text-[10px] font-medium rounded-2xl" style="background:rgba(168,85,247,0.15); color:#c4b5fd">DeepSeek Chat</span>
+              <span class="text-[10px] font-medium" :style="{color: remaining <= 5 ? '#ef4444' : 'var(--text-muted)'}">剩余{{ remaining }}次</span>
               <button @click="visible = false" class="p-1 rounded-full transition-colors" style="color:var(--text-muted)" @mouseenter="(e) => e.target.style.background='rgba(255,255,255,0.05)'" @mouseleave="(e) => e.target.style.background='transparent'">✕</button>
             </div>
           </div>
@@ -119,7 +120,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue'
 import request from '@/utils/request'
 
 const visible = ref(false)
@@ -127,7 +128,12 @@ const input = ref('')
 const loading = ref(false)
 const chatRef = ref(null)
 const chatBody = ref(null)
+const remaining = ref(30)
 const quickQs = ['今日销售如何？', '库存预警？', '如何创建订单？']
+
+async function fetchRemaining() {
+  try { const r = await request.get('/ai/remaining'); remaining.value = r.data.remaining } catch {}
+}
 const hovering = ref(false)
 
 const toolBtns = [
@@ -170,6 +176,7 @@ async function send() {
   try {
     const res = await request.post('/ai/chat', { message: msg })
     messages.value.push({ role: 'assistant', content: res.data.reply || '抱歉，无法回答' })
+    if (res.data.remaining !== undefined) remaining.value = res.data.remaining
   } catch {
     messages.value.push({ role: 'assistant', content: '网络异常，请稍后重试' })
   } finally {
@@ -188,6 +195,7 @@ function onClickOutside(e) {
 
 onMounted(() => document.addEventListener('mousedown', onClickOutside))
 onUnmounted(() => document.removeEventListener('mousedown', onClickOutside))
+watch(visible, (v) => { if (v) fetchRemaining() })
 </script>
 
 <style scoped>
