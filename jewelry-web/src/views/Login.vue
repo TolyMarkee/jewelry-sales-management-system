@@ -56,14 +56,25 @@
         </div>
         <a href="#" class="text-right text-xs mt-2 block hover:underline" style="color:var(--text-muted)">忘记密码？</a>
         <div class="flex justify-center mt-5">
-          <button :disabled="loading" class="group/button relative inline-flex justify-center items-center overflow-hidden rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer disabled:opacity-60 !bg-[#0f172a] hover:!bg-[#020617] shadow-[0_4px_24px_rgba(15,23,42,0.4)]" @click="handleLogin">
-            <span class="text-sm px-3 py-1">{{ loading ? '验证中...' : '登 录' }}</span>
+          <button :disabled="loading" class="group/button relative inline-flex justify-center items-center overflow-hidden rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer disabled:opacity-60 !bg-[#0f172a] hover:!bg-[#020617] shadow-[0_4px_24px_rgba(15,23,42,0.4)]" @click="isRegister ? handleRegister() : handleLogin()">
+            <span class="text-sm px-3 py-1">{{ loading ? '处理中...' : (isRegister ? '注 册' : '登 录') }}</span>
             <div class="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
               <div class="relative h-full w-8 bg-white/20" />
             </div>
           </button>
         </div>
-        <p class="text-center text-xs mt-4" style="color:var(--text-muted)">默认账号 admin / 123456</p>
+        <div v-if="isRegister" class="mb-4">
+          <div class="relative">
+            <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 z-10">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <input v-model="regForm.realName" class="w-full h-12 pl-10 pr-4 bg-white/5 border-2 border-white/10 rounded-lg text-white placeholder-slate-500 outline-none transition-all duration-300 focus:border-blue-500 focus:bg-white/10" placeholder="真实姓名" />
+          </div>
+        </div>
+        <p class="text-center text-xs mt-4" style="color:var(--text-muted)">
+          <template v-if="isRegister">已有账号？<a href="#" @click.prevent="isRegister=false" style="color:var(--accent)">立即登录</a></template>
+          <template v-else>没有账号？<a href="#" @click.prevent="isRegister=true" style="color:var(--accent)">立即注册</a> · 默认 admin / 123456</template>
+        </p>
       </div>
     </div>
     <!-- Right: Image -->
@@ -78,12 +89,16 @@ import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { login } from '@/api'
+import request from '@/utils/request'
+import { ElMessage } from 'element-plus'
 import AppInput from '@/components/AppInput.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
 const isLight = computed(() => document.documentElement.classList.contains('light'))
+const isRegister = ref(false)
 const form = reactive({ username: '', password: '' })
+const regForm = reactive({ realName: '' })
 const loading = ref(false)
 const mouse = ref({ x: 0, y: 0 })
 const hovering = ref(false)
@@ -102,4 +117,5 @@ const socialIcons = [
 
 function onMouseMove(e) { const r = e.currentTarget.getBoundingClientRect(); mouse.value = { x: e.clientX - r.left, y: e.clientY - r.top } }
 async function handleLogin() { if (!form.username || !form.password) return; loading.value = true; try { const res = await login({ username: form.username, password: form.password }); userStore.setToken(res.data.token); userStore.setUser(res.data.user); router.push('/') } catch { loading.value = false } }
+async function handleRegister() { if (!form.username || !form.password) return; loading.value = true; try { await request.post('/register', { username: form.username, password: form.password, realName: regForm.realName }); ElMessage.success('注册成功，请登录'); isRegister.value = false; regForm.realName = ''; form.password = '' } catch {} finally { loading.value = false } }
 </script>
